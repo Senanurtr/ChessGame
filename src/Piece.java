@@ -3,7 +3,8 @@
  */
 public abstract class Piece {
     private boolean white;
-    private boolean alive;
+    private boolean alive = true;
+    private String type;
 
     public Piece(boolean white){
         this.white = white;
@@ -15,6 +16,7 @@ public abstract class Piece {
         return this.alive;
     }
     public void setAlive(boolean alive){this.alive = alive;}
+    public abstract String getType();
     public abstract boolean canMove(Cell start, Cell destination, Board board);
 
 }

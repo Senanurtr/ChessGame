@@ -1,4 +1,5 @@
 public class Pawn extends Piece{
+    private String type = "P";
     private boolean moved = false;  //Eger hareket etmemis ise ilk hareketinde iki kare ilerleyebilme opsiyonu olmali
     public Pawn(boolean white){
         super(white);
@@ -9,66 +10,80 @@ public class Pawn extends Piece{
     public void setMoved(boolean moved){
         this.moved = moved;
     }
+    public String getType(){
+        return this.type;
+    }
 
 
     //  Piyonun secili kareye hareket edip edemeyecegini kontrol eden fonksiyon.
-    public boolean canMove(Cell start, Cell destination, Board board){
+    @Override
+    public boolean canMove(Cell start, Cell destination, Board board) {
 
-        //  Hareket etmemis ise 2 kare ilerleyip ilerlememe durumunu kontrol eder.
-        if (!hasMoved() && (Math.abs(destination.getY() - start.getY()) == 2 && (destination.getX() == start.getX()))){
+        //  Beyazsa bir kare ilerleme durumu:
+        if (start.getPiece().isWhite() && (destination.getY() - start.getY() == -1) && destination.getX() == start.getX()){
+            return destination.getPiece() == null;
 
+            //  Siyahsa bir kare ilerleme durumu:
+        } else if (!start.getPiece().isWhite() && (destination.getY() - start.getY() == 1) && start.getX() == destination.getX()) {
+            return destination.getPiece() == null;
 
-            //  ilk hareketinde iki kare ilerletilmek isteniyorsa ama onunde tas varsa hareket edememeli.
+            //  Beyaz icin carprazindaki tasi yeme durumu:
+        } else if (start.getPiece().isWhite() && Math.abs(destination.getX() - start.getX()) == 1 && destination.getY() - start.getY() == -1) {
+            return !destination.getPiece().isWhite();
 
-            //  Taslar ters yone hareket ettiginden birinin Y parametresi artarken digerininki azalacak.
-            //  Bu yuzden mutlak degerle tek seferde hesaplamak yerine ayri ayri hesaplanmali.
+            //  Siyah icin carprazindaki tasi yeme durumu:
+        }else if (!start.getPiece().isWhite() && Math.abs(destination.getX()) - start.getX() == 1 && destination.getY() - start.getY() == 1){
+            return destination.getPiece().isWhite();
 
-            //  Eger tas siyah ise:
-            if (!start.getPiece().isWhite() && board.getCell(start.getX(), start.getY() + 1).getPiece() == null){
+            //  Beyaz icin iki kare ilerleme durumu:
+        }else if (!hasMoved() && start.getPiece().isWhite() && destination.getY() - start.getY() == -2 && destination.getX() == start.getX()){
+            return board.getCell(start.getX(), start.getY() - 1).getPiece() == null && board.getCell(start.getX(), start.getY() - 2).getPiece() == null;
 
-                if (start.getPiece().isWhite() ^ destination.getPiece().isWhite()){
-                    return true;
-                }else {
-                    return false;
-                }
+            //  Siyah icin iki kare ilerleme durumu:
+        }else if (!hasMoved() && !start.getPiece().isWhite() && destination.getY() - start.getY() == 2 && destination.getX() == start.getX()){
+            return board.getCell(start.getX(), start.getY() + 1).getPiece() == null && board.getCell(start.getX(), start.getY() + 2).getPiece() == null;
 
-                //  Eger tas beyaz ise:
-            }else if (start.getPiece().isWhite() && board.getCell(start.getX(), start.getY() - 1).getPiece() == null){
+            //  Beyaz icin gecerken alma durumu:
+        }else if (start.getPiece().isWhite() && (start.getX() <= 6) && (start.getX() >= 1) ) {
+            if ((board.getCell(start.getX() + 1, start.getY()).getPiece() instanceof Pawn
+                    && !board.getCell(start.getX() + 1, start.getY()).getPiece().isWhite() ||
+                    (start.getX() - 1 >= 0) && board.getCell(start.getX() - 1, start.getY()).getPiece() instanceof Pawn)
+                    && !board.getCell(start.getX() - 1, start.getY()).getPiece().isWhite()) {
 
-                if (start.getPiece().isWhite() ^ destination.getPiece().isWhite()){
-                    return true;
-                }else {
-                    return false;
-                }
+                return Math.abs(destination.getX()) - start.getX() == 1 && destination.getY() - start.getY() == -1 && destination.getPiece() == null;
+            }
+        } else if (start.getPiece().isWhite() && start.getX() == 7) {
+            if (board.getCell(start.getX() - 1, start.getY()).getPiece() instanceof Pawn
+                    && !board.getCell(start.getX() - 1, start.getY()).getPiece().isWhite()) {
+                return Math.abs(destination.getX() - start.getY()) == 1 && destination.getY() - start.getY() == -1 && destination.getPiece() == null;
+            }
+        } else if (start.getPiece().isWhite() && start.getX() == 0) {
+            if (board.getCell(start.getX() + 1, start.getY()).getPiece() instanceof Pawn
+                    && !board.getCell(start.getX() + 1, start.getY()).getPiece().isWhite()){
+                return Math.abs(destination.getX() - start.getY()) == 1 && destination.getY() - start.getY() == -1 && destination.getPiece() == null;
+            }
 
-            }else {
-                return false;
+            //  Siyah icin gecerken alma durummu:
+        }else if (!start.getPiece().isWhite() && start.getX() <= 6 && start.getX() >= 1) {
+            if ((board.getCell(start.getX() + 1, start.getY()).getPiece() instanceof Pawn
+                    && board.getCell(start.getX() + 1, start.getY()).getPiece().isWhite() ||
+                    board.getCell(start.getX() - 1 , start.getY()).getPiece() instanceof Pawn)
+                    && board.getCell(start.getX() -1 , start.getY()).getPiece().isWhite()){
+                return Math.abs(destination.getX()) - start.getX() == 1 && destination.getY() - start.getY() == 1 && destination.getPiece() == null;
             }
 
 
-            //  Hareket etmis ise sadece 1 kare ilerleme durumunu kontrol eder.
-        }else if (!hasMoved() && (Math.abs(destination.getY() - start.getY()) == 1 && (destination.getX() == start.getX()))){
-            if (start.getPiece().isWhite() && destination.getPiece().isWhite()){
-                return false;
-            }else {
-                return true;
+        }else if(!start.getPiece().isWhite() && start.getX() == 7) {
+            if (board.getCell(start.getX() - 1, start.getY()).getPiece() instanceof Pawn
+                    && board.getCell(start.getX() - 1, start.getY()).getPiece().isWhite()){
+                return Math.abs(destination.getX()) - start.getX() == 1 && destination.getY() - start.getY() == 1 && destination.getPiece() == null;
             }
-
-            //  Eger piyon sadece birer kare carprazindaki noktalara gidecekse ve gidecegi karedeki tas
-            //  ayni renkte degilse true dondurur.
-            //  If icinde ikinci karsilastirmada mutlak deger alinmamasinin sebebi piyonun baslangic
-            //  konumuna dogru gitmesini engellemek.
-            //  Mutlak deger alinmadigidan dolayi her renk icin ayri ayri kontrol edilmeli.
-
-        }else if(Math.abs(destination.getX() - start.getX()) == 1 && (destination.getY() - start.getY()) == 1) {
-            if (start.getPiece().isWhite() && destination.getPiece().isWhite()){
-                return false;
-            }else {
-                return true;
+        } else if (!start.getPiece().isWhite() && start.getX() == 0) {
+            if (board.getCell(start.getX() + 1, start.getY()).getPiece() instanceof Pawn
+                    && board.getCell(start.getX() + 1, start.getY()).getPiece().isWhite()){
+                return Math.abs(destination.getX()) - start.getX() == 1 && destination.getY() - start.getY() == 1 && destination.getPiece() == null;
             }
-        }else {
-            return false;
         }
+        return false;
     }
-
 }

@@ -1,14 +1,24 @@
 public class Rook extends Piece {
-
+    private String type = "R";
+    private boolean castlingDone;   //Rok yapip yapmama durununu kontrol etmek icin degisken.
     public Rook(boolean white) {
         super(white);
     }
 
+    public String getType(){
+        return this.type;
+    }
+    public void setCastlingDone(boolean castlingDone){
+        this.castlingDone = castlingDone;
+    }
+    public boolean hasCastlingDone(){
+        return this.castlingDone;
+    }
     @Override
     public boolean canMove(Cell start, Cell destination, Board board) {
 
         // Hedef hücrede aynı renkte başka bir taş varsa
-        if (start.getPiece().isWhite() == destination.getPiece().isWhite()) {
+        if (start.getPiece().isWhite() && destination.getPiece() != null && destination.getPiece().isWhite()) {
             return false;
         }
 

@@ -1,14 +1,17 @@
 public class Queen extends Piece {
-
+    private String type = "Q";
     public Queen(boolean white) {
         super(white);
     }
 
+    public String getType(){
+        return this.type;
+    }
     @Override
     public boolean canMove(Cell start, Cell destination, Board board) {
 
         // Hedef hücrede aynı renkte başka bir taş varsa
-        if (start.getPiece().isWhite() == destination.getPiece().isWhite()) {
+        if (start.getPiece().isWhite() && destination.getPiece() != null && destination.getPiece().isWhite()) {
             return false;
         }
 
@@ -29,6 +32,7 @@ public class Queen extends Piece {
                     }
                     y += yDir;
                 }
+                return true;
             }
             // yatay hareket
             else if (diffY == 0) {
@@ -42,6 +46,7 @@ public class Queen extends Piece {
                     }
                     x += xDir;
                 }
+                return true;
             }
             // çapraz hareket
             else {
@@ -50,7 +55,7 @@ public class Queen extends Piece {
                 int x = start.getX() + xDir;
                 int y = start.getY() + yDir;
 
-                //yolda taşi var mı
+                //yolda taş var mı
                 while (x != destination.getX() && y != destination.getY()) {
                     if (board.getCell(x, y).getPiece() != null) {
                         return false;
@@ -58,6 +63,7 @@ public class Queen extends Piece {
                     x += xDir;
                     y += yDir;
                 }
+                return true;
             }
         }
         return false;
