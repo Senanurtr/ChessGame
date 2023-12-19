@@ -1,8 +1,12 @@
 public class Rook extends Piece {
     private String type = "R";
+    private final String path;
     private boolean castlingDone;   //Rok yapip yapmama durununu kontrol etmek icin degisken.
     public Rook(boolean white) {
         super(white);
+        if (isWhite()){
+            path="src/images/wr.png";
+        }else path="src/images/br.png";
     }
 
     public String getType(){

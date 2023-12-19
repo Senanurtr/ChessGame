@@ -1,8 +1,13 @@
 public class Bishop extends Piece {
     private final String type = "B";
+    private final String path;
     public Bishop(boolean white) {
         super(white);
+        if (isWhite()){
+            path="src/images/wb.png";
+        }else path="src/images/bb.png";
     }
+    @Override
     public String getType(){
         return this.type;
     }

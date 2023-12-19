@@ -1,9 +1,14 @@
 public class Pawn extends Piece{
     private String type = "P";
+    private final String path;
     private boolean moved = false;  //Eger hareket etmemis ise ilk hareketinde iki kare ilerleyebilme opsiyonu olmali
     public Pawn(boolean white){
         super(white);
+        if (isWhite()){
+            path="src/images/wp.png";
+        }else path="src/images/bp.png";
     }
+
     public boolean hasMoved(){
         return this.moved;
     }

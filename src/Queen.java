@@ -1,7 +1,11 @@
 public class Queen extends Piece {
     private String type = "Q";
+    private final String path;
     public Queen(boolean white) {
         super(white);
+        if (isWhite()){
+            path="src/images/wq.png";
+        }else path="src/images/bq.png";
     }
 
     public String getType(){
