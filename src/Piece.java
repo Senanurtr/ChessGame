@@ -1,3 +1,5 @@
+import javax.swing.*;
+
 /*
  * Daha sonra olusturulacak 32 tas icin blueprint.
  */
@@ -17,6 +19,7 @@ public abstract class Piece {
     }
     public void setAlive(boolean alive){this.alive = alive;}
     public abstract String getType();
+    public abstract Icon getPath();
     public abstract boolean canMove(Cell start, Cell destination, Board board);
 
 }

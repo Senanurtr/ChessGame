@@ -1,3 +1,5 @@
+import javax.swing.*;
+
 public class King extends Piece{
     private String type = "S";
     private final String path;
@@ -12,6 +14,11 @@ public class King extends Piece{
     }
     public String getType(){
         return this.type;
+    }
+
+    @Override
+    public Icon getPath() {
+        return new ImageIcon(path);
     }
 
     public boolean hasCastlingDone(){

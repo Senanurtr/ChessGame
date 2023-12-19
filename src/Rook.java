@@ -1,3 +1,5 @@
+import javax.swing.*;
+
 public class Rook extends Piece {
     private String type = "R";
     private final String path;
@@ -7,6 +9,11 @@ public class Rook extends Piece {
         if (isWhite()){
             path="src/images/wr.png";
         }else path="src/images/br.png";
+    }
+
+    @Override
+    public Icon getPath() {
+        return new ImageIcon(path);
     }
 
     public String getType(){
@@ -43,6 +50,7 @@ public class Rook extends Piece {
                     }
                     y += yDir;
                 }
+                return true;
             }
             // yatay hareket
             if (diffY == 0){
@@ -56,6 +64,7 @@ public class Rook extends Piece {
                     }
                     x += xDir;
                 }
+                return true;
             }
         }
         return false;

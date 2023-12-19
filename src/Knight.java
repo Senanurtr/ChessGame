@@ -1,3 +1,5 @@
+import javax.swing.*;
+
 public class Knight extends Piece {
     private String type = "K";
     private final String path;
@@ -10,6 +12,11 @@ public class Knight extends Piece {
     @Override
     public String getType(){
         return this.type;
+    }
+
+    @Override
+    public Icon getPath() {
+        return new ImageIcon(path);
     }
 
     @Override

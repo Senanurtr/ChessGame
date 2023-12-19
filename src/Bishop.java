@@ -1,3 +1,5 @@
+import javax.swing.*;
+
 public class Bishop extends Piece {
     private final String type = "B";
     private final String path;
@@ -10,6 +12,11 @@ public class Bishop extends Piece {
     @Override
     public String getType(){
         return this.type;
+    }
+
+    @Override
+    public Icon getPath() {
+        return new ImageIcon(path);
     }
 
     @Override

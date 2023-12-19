@@ -1,3 +1,5 @@
+import javax.swing.*;
+
 public class Queen extends Piece {
     private String type = "Q";
     private final String path;
@@ -6,6 +8,11 @@ public class Queen extends Piece {
         if (isWhite()){
             path="src/images/wq.png";
         }else path="src/images/bq.png";
+    }
+
+    @Override
+    public Icon getPath() {
+        return new ImageIcon(path);
     }
 
     public String getType(){

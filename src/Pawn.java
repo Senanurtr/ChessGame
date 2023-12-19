@@ -1,3 +1,5 @@
+import javax.swing.*;
+
 public class Pawn extends Piece{
     private String type = "P";
     private final String path;
@@ -7,6 +9,11 @@ public class Pawn extends Piece{
         if (isWhite()){
             path="src/images/wp.png";
         }else path="src/images/bp.png";
+    }
+
+    @Override
+    public Icon getPath() {
+        return new ImageIcon(path);
     }
 
     public boolean hasMoved(){
