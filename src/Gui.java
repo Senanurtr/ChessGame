@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 public class Gui extends JFrame implements ActionListener {
 
     private JButton[][] jboard;
+    private Cell startCell;
     public Gui() {
         jboard = new JButton[8][8];
         initializeGUI();
@@ -24,7 +25,7 @@ public class Gui extends JFrame implements ActionListener {
                     jboard[i][j].setBackground(Color.WHITE);
                 } else {
                     //siyah olunca siyah taşlar kötü görünüyordu yeşil yaptım değiştirebiliriz
-                    jboard[i][j].setBackground(new Color(0, 128, 0));
+                    jboard[i][j].setBackground(new Color(149,141,148,255));
                 }
                 add(jboard[i][j]);
             }
@@ -38,6 +39,8 @@ public class Gui extends JFrame implements ActionListener {
         setSize(500, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
+    // mainde oynanan taş yerine set icon null. destination celle seticon getpath || getimageicon
+
     private void initializeBoard() {
         //Siyah taşlar
         jboard[0][0].setIcon(new ImageIcon("src/images/br.png"));
@@ -74,8 +77,17 @@ public class Gui extends JFrame implements ActionListener {
     //Seçilen butona göre yapılacak işlemler bu fonksiyonda yazılacak
     @Override
     public void actionPerformed(ActionEvent e) {
+        Board board = new Board();
+
         JButton secilenButton = (JButton) e.getSource();
 
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+
+
+            }
+        }
     }
 
     public static void main(String[] args) {

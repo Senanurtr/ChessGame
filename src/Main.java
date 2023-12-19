@@ -33,16 +33,16 @@ public class Main {
 
             Scanner scanner = new Scanner(System.in);
             System.out.print("\nHamle yapacaginiz tasin x kordinatini giriniz: ");
-            int startX = scanner.nextInt();
+            int startX = scanner.nextInt() - 1;
             System.out.print("\nHamle yapacaginiz tasin y kordinatini giriniz: ");
-            int startY = scanner.nextInt();
+            int startY = scanner.nextInt() - 1;
 
 
 
             System.out.print("\nTasin gidecegi yerin x kordinatini giriniz: ");
-            int destinationX = scanner.nextInt();
+            int destinationX = scanner.nextInt() - 1;
             System.out.print("\nTasin gidecegi yerin y kordinatini giriniz: ");
-            int destinationY = scanner.nextInt();
+            int destinationY = scanner.nextInt() - 1;
 
             Move move = new Move(game.getBoard().getCell(startX, startY), game.getBoard().getCell(destinationX, destinationY), player0);
             game.makeMove(move, game.getCurrentTurn());
