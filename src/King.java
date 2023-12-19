@@ -1,14 +1,18 @@
 public class King extends Piece{
     private String type = "S";
+    private final String path;
+
     private boolean alive = true;
     private boolean castlingDone = false;   //  Eger sah hareket etmis ise oyuncu rok yapamamali.
     public King(boolean white){
         super(white);
+        if (isWhite()){
+            path="src/images/wk.png";
+        }else path="src/images/bk.png";
     }
     public String getType(){
         return this.type;
     }
-
 
     public boolean hasCastlingDone(){
         return this.castlingDone;
@@ -16,6 +20,7 @@ public class King extends Piece{
     public void setCastlingDone(boolean castlingDone){
         this.castlingDone = castlingDone;
     }
+    @Override
     public boolean canMove(Cell start, Cell destination, Board board){
 
         //  Sah X ve Y ekseninde en fazla 1er kare ilerleyebilmeli.
@@ -133,7 +138,6 @@ public class King extends Piece{
 
         //  Sah'in yerinin bulunmasi:
         Cell blackKingsPosition = blackKingsPosition(board);
-
         //  Sol üstten baslayarak tum hucreleri kontrol eder ve kontrol ettigi hucredeki tas beyazsa
         //  Sah'in hucresine gidip gidemeyecegini kontrol eder.Gidebiliyorsa true dondurur.
         for (int y = 0; y <= 7; y++){
@@ -144,6 +148,172 @@ public class King extends Piece{
                 }
             }
         }
+        return false;
+    }
+    public boolean isCheckmate(Board board){
+        //Beyaz şah tehdit altında ise
+        if (isWhiteUnderThreat(board)){
+
+            //önce tehdit eden taşı yiyebiliyor muyuz bakılır
+            //yenilmiyorsa şahın gidecek yeri kaldı mı diye bakılır
+
+
+            int wX = whiteKingsPosition(board).getX();
+            int wY = whiteKingsPosition(board).getY();
+            Piece wKing = whiteKingsPosition(board).getPiece();
+            Cell king = new Cell(wX,wY,wKing);
+
+            for (int iy=0; iy<8; iy++){
+                for (int ix=0; ix<8; ix++){
+                    //eğer taş varsa ve beyaz değilse
+                    if ( !(board.getCell(ix,iy).getPiece()==null)  &&  !board.getCell(ix,iy).getPiece().isWhite()){
+                        Piece minator = board.getCell(ix,iy).getPiece();
+                        Cell minatorCell = board.getCell(ix,iy);
+                        //ve şahı tehdit ediyorsa
+                        if (minator.canMove(minatorCell,king,board)){
+
+                            for (int i =0 ; i<8 ; i++){
+                                for (int j=0; j<8; j++){
+                                    //herhangi bir beyaz taş tehdit eden taşı yiyebiliyor mu
+                                    if (!(board.getCell(i,j).getPiece()==null)  &&  board.getCell(i,j).getPiece().isWhite()){
+                                        Piece white = board.getCell(i,j).getPiece();
+                                        Cell whiteCell = board.getCell(i,j);
+                                        if (white.canMove(whiteCell,minatorCell,board)){ //yiyebiliyorsa
+
+                                            minatorCell.setPiece(white);
+                                            // yedikten sonraki durum için isCheckmate tekrar kontrol
+                                            return isCheckmate(board);
+
+                                        }
+                                    }
+                                }
+                            }
+
+
+                            //şahın etrafındaki 8 kare için kontrol
+                            Cell[] cells={new Cell(wX-1,wY-1,null),
+                                    new Cell(wX,wY-1,null),
+                                    new Cell(wX+1,wY-1,null),
+                                    new Cell(wX-1,wY,null),
+                                    new Cell(wX+1,wY,null),
+                                    new Cell(wX-1,wY+1,null),
+                                    new Cell(wX,wY+1,null),
+                                    new Cell(wX+1,wY+1,null)};
+
+                            boolean[] booleans = new boolean[]{true,true,true,true,true,true,true,true};
+
+                            for (int i=0;i<8;i++){
+                                //şah o kareye gidebiliyor mu
+                                if (wKing.canMove(king,cells[i],board)){
+                                    //gidebiliyor ama orası başka bir taş tarafından tehdit ediliyor mu
+                                    //her karedeki taşı al
+                                    for (int yy=0; yy<8; yy++){
+                                        for (int xx=0; xx<8; xx++){
+                                            //eğer taş varsa ve beyaz değilse
+                                            if ( !(board.getCell(xx,yy).getPiece()==null)  &&  !board.getCell(xx,yy).getPiece().isWhite()){
+                                                Piece minator2 = board.getCell(xx,yy).getPiece();
+                                                Cell minator2Cell = board.getCell(xx,yy);
+                                                //ve şahın gidebileceği yeri tehdit ediyorsa
+                                                if (minator2.canMove(minator2Cell,king,board)){
+                                                    booleans[i]=false; // şah o kareye gidemez
+                                                }
+                                            }
+                                        }
+                                    }
+                                }else booleans[i]=false; //gidemiyor
+                            }
+
+                            for (int i=0;i<8;i++){
+                                if (booleans[i]){  //8 kareden herhangi birine gidebiliyorsa
+                                    return false;  //mat yok
+                                }
+                            }return true;   //hiçbirine gidemiyorsa mat
+
+                        }
+                    }
+                }
+            }
+        }else if (isBlackUnderThreat(board)){   //siyah şah tehdit altında ise
+
+
+            //önce tehdit eden taşı yiyebiliyor muyuz bakılır
+            //yenilmiyorsa şahın gidecek yeri kaldı mı diye bakılır
+
+
+            int bX = blackKingsPosition(board).getX();
+            int bY = blackKingsPosition(board).getY();
+            Piece bKing = blackKingsPosition(board).getPiece();
+            Cell king = new Cell(bX,bY,bKing);
+
+
+            for (int iy=0; iy<8; iy++){
+                for (int ix=0; ix<8; ix++){
+                    //eğer taş varsa ve beyazsa
+                    if ( !(board.getCell(ix,iy).getPiece()==null)  &&  board.getCell(ix,iy).getPiece().isWhite()){
+                        Piece minator = board.getCell(ix,iy).getPiece();
+                        Cell minatorCell = board.getCell(ix,iy);
+                        //ve şahı tahdit ediyorsa
+                        if (minator.canMove(minatorCell,king,board)){
+
+                            for (int i =0 ; i<8 ; i++){
+                                for (int j=0; j<8; j++){
+                                    //herhangi bir siyah taş tehdit eden taşı yiyebiliyor mu
+                                    if (!(board.getCell(i,j).getPiece()==null)  &&  !board.getCell(i,j).getPiece().isWhite()){
+                                        Piece black = board.getCell(i,j).getPiece();
+                                        Cell blackCell = board.getCell(i,j);
+                                        if (black.canMove(blackCell,minatorCell,board)){
+                                            //yiyebiliyorsa
+                                            minatorCell.setPiece(black);
+                                            return isCheckmate(board);
+                                        }
+                                    }
+                                }
+                            }
+
+                            //yiyemiyorrsa şahın etrafındaki 8 kare için kontrol
+                            Cell[] cells={new Cell(bX-1,bY-1,null),
+                                    new Cell(bX,bY-1,null),
+                                    new Cell(bX+1,bY-1,null),
+                                    new Cell(bX-1,bY,null),
+                                    new Cell(bX+1,bY,null),
+                                    new Cell(bX-1,bY+1,null),
+                                    new Cell(bX,bY+1,null),
+                                    new Cell(bX+1,bY+1,null)};
+
+                            boolean[] booleans = new boolean[]{true,true,true,true,true,true,true,true};
+
+                            for (int i=0;i<8;i++){
+                                //şah o kareye gidebiliyor mu
+                                if (bKing.canMove(king,cells[i],board)){
+                                    //her karedeki taşı al
+                                    for (int yy=0; yy<8; yy++){
+                                        for (int xx=0; xx<8; xx++){
+                                            //eğer taş varsa ve beyazsa
+                                            if (!(board.getCell(xx,yy).getPiece()==null) && board.getCell(xx,yy).getPiece().isWhite()){
+                                                Piece minator2 = board.getCell(xx,yy).getPiece();
+                                                Cell minator2Cell = board.getCell(xx,yy);
+                                                //ve şahın gidebileceği yeri tehdit ediyorsa
+                                                if (minator2.canMove(minator2Cell,king,board)){
+                                                    booleans[i]=false; //siyah şah o kareye gidemez
+                                                }
+                                            }
+                                        }
+                                    }
+                                }else booleans[i]=false; //gidemiyor
+                            }
+
+                            for (int i=0;i<8;i++){
+                                if (booleans[i]){
+                                    return false;
+                                }
+                            }return true;
+
+                        }
+                    }
+                }
+            }
+        }
+        //iki renk de tehdit altında değiğlse
         return false;
     }
 }
