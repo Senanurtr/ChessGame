@@ -4,13 +4,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Gui extends JFrame implements ActionListener {
+    Board board= new Board();
+    Game game = new Game();
 
     private JButton[][] jboard;
+    private JButton startButton;
+    private JButton destinationButton;
     private Cell startCell;
+
     public Gui() {
         jboard = new JButton[8][8];
         initializeGUI();
     }
+
     private void initializeGUI() {
         setTitle("Satranç Oyunu");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -25,7 +31,7 @@ public class Gui extends JFrame implements ActionListener {
                     jboard[i][j].setBackground(Color.WHITE);
                 } else {
                     //siyah olunca siyah taşlar kötü görünüyordu yeşil yaptım değiştirebiliriz
-                    jboard[i][j].setBackground(new Color(149,141,148,255));
+                    jboard[i][j].setBackground(new Color(149, 141, 148, 255));
                 }
                 add(jboard[i][j]);
             }
@@ -39,7 +45,6 @@ public class Gui extends JFrame implements ActionListener {
         setSize(500, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
-    // mainde oynanan taş yerine set icon null. destination celle seticon getpath || getimageicon
 
     private void initializeBoard() {
         //Siyah taşlar
@@ -73,24 +78,159 @@ public class Gui extends JFrame implements ActionListener {
         }
     }
 
+    public JButton waitForButtonClick() {
+        final JButton[] clickedButton = {null};
 
-    //Seçilen butona göre yapılacak işlemler bu fonksiyonda yazılacak
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        Board board = new Board();
+        ActionListener actionListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clickedButton[0] = (JButton) e.getSource();
+            }
+        };
 
-        JButton secilenButton = (JButton) e.getSource();
-
-
+        // ActionListener ile butona tıklama dinlenir
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-
-
+                jboard[i][j].addActionListener(actionListener);
             }
         }
+
+        // clickedButton[0] null değilse bir butona tıklanmış demektir
+        while (clickedButton[0] == null) {
+            try {
+                Thread.sleep(100); // Bekleme süresi, gerekirse ayarlayabilirsiniz
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // ActionListener'ı kaldırarak sonraki tıklamaları etkilememesi için temizleyin
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                jboard[i][j].removeActionListener(actionListener);
+            }
+        }
+
+        return clickedButton[0];
     }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        JButton clickedButton = getSelectedButton(e);
+
+        boolean turn = game.getTurn();
+        Player player= new Player(turn);
+            if (startButton == null) {
+                startButton = clickedButton;
+
+                int xs = getButtonX(startButton);
+                int ys = getButtonY(startButton);
+                startCell = board.getCell(xs, ys);
+
+                System.out.println("Start x: " + getButtonX(startButton) + ", y: " + getButtonY(startButton)+startCell.getPiece());
+
+                // Eğer startButton'a ait taş, şu anki oyuncunun taşı değilse, startButton'u sıfırla
+                if (startCell.getPiece() == null || startCell.getPiece().isWhite() != turn) {
+                    startButton = null;
+                    startCell = null;
+                    System.out.println("Bu taş sizin değil!");
+                }
+
+            } else {
+                destinationButton = clickedButton;
+                System.out.println("Destination x: " + getButtonX(destinationButton) + ", y: " + getButtonY(destinationButton));
+
+                if (startButton != null && destinationButton != null && startCell != null) {
+                    int xd = getButtonX(destinationButton);
+                    int yd = getButtonY(destinationButton);
+                    Cell destination = board.getCell(xd, yd);
+
+                    // Eğer destinationButton'a ait hücre boşsa veya düşman taşı varsa
+                    if (destination.getPiece() == null || destination.getPiece().isWhite() != turn) {
+                        Move move = new Move(startCell, destination, player);
+
+                        if (startCell.getPiece().canMove(startCell, destination, board)) {
+                            System.out.println("Seçilen taş hedefe gidebiliyor ");
+                            destinationButton.setIcon(startCell.getPiece().getPath());
+                            startButton.setIcon(null);
+                            game.makeMove(move, game.getCurrentTurn());
+                        } else {
+                            System.out.println("Bu taşın böyle bir hareketi yok!");
+                        }
+                    } else {
+                        System.out.println("Hedef hücrede kendi taşınız var!");
+                    }
+                }
+
+                startButton = null;
+                destinationButton = null;
+                startCell = null;
+            }
+        }
+
+    public int getButtonX(JButton button) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (jboard[i][j] == button) {
+                    return j;
+                }
+            }
+        }
+        return -1; // Bulunamadı
+    }
+
+    public int getButtonY(JButton button) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (jboard[i][j] == button) {
+                    return i;
+                }
+            }
+        }
+        return -1; // Bulunamadı
+    }
+
+    public JButton getSelectedButton(ActionEvent e) {
+        return (JButton) e.getSource();
+    }
+
+
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(Gui::new);
+
+        Game game = new Game();
+        Player player0 = new Player(true);
+        Player player1 = new Player(false);
+
+        game.initialize(player0, player1);
+
+        Gui gui = new Gui();
+
+        while (game.getStatus() == GameStatus.ACTIVE) {
+            JButton startJB = null;
+            JButton destJB = null;
+
+            // Start butonunu seçene kadar bekleyin
+            while (startJB == null) {
+                startJB = gui.waitForButtonClick();
+            }
+
+            int startX = gui.getButtonX(startJB);
+            int startY = gui.getButtonY(startJB);
+            Cell start = game.getBoard().getCell(startX, startY);
+
+            // Hareketi seçene kadar bekleyin
+            while (destJB == null) {
+                destJB = gui.waitForButtonClick();
+            }
+
+            int destinationX = gui.getButtonX(destJB);
+            int destinationY = gui.getButtonY(destJB);
+            Cell destination = game.getBoard().getCell(destinationX, destinationY);
+            Move move = new Move(start, destination, game.getCurrentTurn());
+
+            game.makeMove(move, game.getCurrentTurn());
+            startJB.setIcon(null);
+            destJB.setIcon(start.getPiece().getPath());
+        }
     }
 }

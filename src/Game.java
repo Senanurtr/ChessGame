@@ -15,6 +15,10 @@ public class Game {
     public void setStatus(GameStatus status){
         this.status = status;
     }
+     public boolean getTurn(){
+          return this.currentTurn.whiteSide;
+    }
+
     public void initialize(Player player1, Player player2){
         players[0] = player1;
         players[1] = player2;
