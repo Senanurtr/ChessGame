@@ -1,5 +1,3 @@
-import java.util.concurrent.SubmissionPublisher;
-
 public class Game {
     private Player[] players = new Player[2];
     private Board board = new Board();
@@ -15,10 +13,6 @@ public class Game {
     public void setStatus(GameStatus status){
         this.status = status;
     }
-     public boolean getTurn(){
-          return this.currentTurn.whiteSide;
-    }
-
     public void initialize(Player player1, Player player2){
         players[0] = player1;
         players[1] = player2;
@@ -35,16 +29,10 @@ public class Game {
     public Board getBoard(){
         return this.board;
     }
-    public boolean playerMove(Player player, int startX, int startY, int destinationX, int destinationY){
-        Cell startCell = board.getCell(startX, startY);
-        Cell destinationCell = board.getCell(destinationX, destinationY);
-        Move move = new Move(startCell, destinationCell, player);
-
-        return this.makeMove(move, player);
-    }
 
     public boolean makeMove(Move move, Player player){
         Piece selectedPiece = move.getStart().getPiece();
+        Piece selectedRook;
 
         //  Secili hucrede tas yoksa hamle yapilamaz.
         if (selectedPiece == null){
@@ -70,26 +58,84 @@ public class Game {
             return false;
         }
 
-        //  Asagidaki durum kontrol edilmeden onceki secili hucrelerin kopyasi:
-        Cell copyOfStart = new Cell(move.getStart().getX(), move.getStart().getY(), move.getStart().getPiece());
-        Cell copyOfDestination = new Cell(move.getDestination().getX(), move.getDestination().getY(), move.getDestination().getPiece());
+        //  Tas alindi mi?
+        Piece destinationPiece = move.getDestination().getPiece();
+        if (destinationPiece != null){
 
-        //  Yapilan hamle sonucu Sah tehdit altinda kaliyor mu?
+            destinationPiece.setAlive(false);
+        }
+
+        //  Yapilan hamle sonucu hamle yapan kisinin Sah'i tehdit altinda kaliyor mu?
         if (move.resultInThreat(move.getStart(), move.getDestination(), board, currentTurn)){
-            System.out.println("yapilan hamle sonucu sah tehdit altinda kalir");
             return false;
         }
 
-        //  Sah'in tehdit altinda kalma durumu kontrol edildikten sonra taslarin yerlerine geri donmesi:
 
-        move.getDestination().setPiece(copyOfDestination.getPiece());
-        move.getStart().setPiece(copyOfStart.getPiece());
+        //  Yapilan hamle Rok ise
+        //  Beyaz icin:
+        if (selectedPiece instanceof King &&
+                ((King) selectedPiece).isCastlingMove(move.getStart(), move.getDestination(), board)){
+
+            if (move.getStart().getPiece().isWhite() && move.getDestination().getX() == 1){
+                //  Sahin hareket etmesi
+                move.getDestination().setPiece(selectedPiece);
+                move.getStart().setPiece(null);
+
+                selectedRook = board.getCell(0, 7).getPiece();
+
+                //  Kalenin hareket etmesi
+                board.getCell(0, 7).setPiece(null);
+                board.getCell(2, 7).setPiece(selectedRook);
+
+            } else if (move.getStart().getPiece().isWhite() && move.getDestination().getY() == 7) {
+                //  Sahin hareket etmesi
+                move.getDestination().setPiece(selectedPiece);
+                move.getStart().setPiece(null);
+
+                selectedRook = board.getCell(7, 7).getPiece();
+
+                //  Kalenin hareket etmesi
+                board.getCell(7, 7).setPiece(null);
+                board.getCell(4, 7).setPiece(selectedRook);
 
 
-        //  Secili tas piyon ise sonraki hamlelerdde 2 kare ilerlememesi icin moved attribute'u true olur.
-        if (selectedPiece instanceof Pawn){
-            ((Pawn) selectedPiece).setMoved(true);
+
+                //  Siyah Tas icin
+                //  Sah'in hareket etmesi
+            } else if (!move.getStart().getPiece().isWhite() && move.getDestination().getX() == 1) {
+                //  Sahin hareket etmesi
+                move.getDestination().setPiece(selectedPiece);
+                move.getStart().setPiece(null);
+
+                selectedRook = board.getCell(0, 0).getPiece();
+
+                //  Kalenin hareket etmesi
+                board.getCell(0, 0).setPiece(null);
+                board.getCell(2, 0).setPiece(selectedRook);
+
+
+            } else if (!move.getStart().getPiece().isWhite() && move.getDestination().getX() == 5) {
+                //  Sahin hareket etmesi
+                move.getDestination().setPiece(selectedPiece);
+                move.getStart().setPiece(null);
+
+                selectedRook = board.getCell(7, 0).getPiece();
+
+                //  Kalenin hareket etmesi
+                board.getCell(7, 0).setPiece(null);
+                board.getCell(4, 0).setPiece(selectedRook);
+
+
+            }
+
+        }else {
+            //  Tasin hareket etmesi:
+            move.getDestination().setPiece(selectedPiece);
+            move.getStart().setPiece(null);
         }
+
+        //  Piyon tahtanin diger ucuna ulasmis ise terfi almali
+        move.promote(move.getDestination());
 
         //  Eger Kale veya Sah hareket etmis ise Rok yapamamali.
         if (selectedPiece instanceof Rook){
@@ -99,20 +145,22 @@ public class Game {
             ((King) selectedPiece).setCastlingDone(true);
         }
 
-        //  Tas alindi mi?
-        Piece destinationPiece = move.getDestination().getPiece();
-        if (destinationPiece != null){
 
-            destinationPiece.setAlive(false);
+
+        //  Secili tas piyon ise sonraki hamlelerdde 2 kare ilerlememesi icin moved attribute'u true olur.
+        if (selectedPiece instanceof Pawn){
+            ((Pawn) selectedPiece).setMoved(true);
         }
+        if (move.blackKingsPosition(board).getPiece() instanceof King && ((King) move.blackKingsPosition(board).getPiece()).isCheckmate(board)){
+            this.setStatus(GameStatus.WHITE_WIN);
 
-        //  Tasin hareket etmesi:
-        move.getDestination().setPiece(selectedPiece);
-        move.getStart().setPiece(null);
+        } else if (move.whiteKingsPosition(board).getPiece() instanceof King && ((King) move.whiteKingsPosition(board).getPiece()).isCheckmate(board)) {
+            this.setStatus(GameStatus.BLACK_WIN);
+        }
 
 
         //  Eger alinan tas Sah ise oyun biter.
-        if (destinationPiece != null && destinationPiece instanceof King){
+        if (destinationPiece instanceof King){
             if (player.isWhiteSide()){
                 this.setStatus(GameStatus.WHITE_WIN);
             }else {

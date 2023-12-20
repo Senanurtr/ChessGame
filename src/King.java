@@ -4,6 +4,11 @@ public class King extends Piece{
     private String type = "S";
     private final String path;
 
+    @Override
+    public Icon getPath() {
+        return new ImageIcon(path);
+    }
+
     private boolean alive = true;
     private boolean castlingDone = false;   //  Eger sah hareket etmis ise oyuncu rok yapamamali.
     public King(boolean white){
@@ -14,11 +19,6 @@ public class King extends Piece{
     }
     public String getType(){
         return this.type;
-    }
-
-    @Override
-    public Icon getPath() {
-        return new ImageIcon(path);
     }
 
     public boolean hasCastlingDone(){
@@ -63,12 +63,11 @@ public class King extends Piece{
 
 
     //  Girilen parametrelere gore Sah'in yaptigi hareketin rok olup olmadigini kontrol eden fonksiyon.
-    //  Tehdit altinda olma durumu daha sonra eklenecek.
     public boolean isCastlingMove(Cell start, Cell destination, Board board){
         if (start.getPiece().isWhite() && !this.hasCastlingDone() && destination.getX() == 1 && destination.getY() == 7){
 
-            return board.getCell(2, 7).getPiece() == null && board.getCell(0, 7).getPiece() instanceof Rook
-                    && !((Rook) board.getCell(0, 7).getPiece()).hasCastlingDone();
+            return board.getCell(2, 7).getPiece() == null && board.getCell(0, 7).getPiece() instanceof Rook && !((Rook) board.getCell(0, 7).getPiece()).hasCastlingDone();
+
 
         } else if (start.getPiece().isWhite() && !this.hasCastlingDone() && destination.getX() == 5 && destination.getY() == 7) {
 
@@ -111,7 +110,7 @@ public class King extends Piece{
         Cell blackKingsPosition = new Cell(0, 0, null);
         for (int y = 0; y <= 7; y++){
             for (int x = 0; x <=7; x++){
-                if (board.getCell(x, y).getPiece() instanceof King && board.getCell(x, y).getPiece().isWhite()) {
+                if (board.getCell(x, y).getPiece() instanceof King && !board.getCell(x, y).getPiece().isWhite()) {
                     blackKingsPosition = board.getCell(x, y);
                     break;
                 }
@@ -127,11 +126,12 @@ public class King extends Piece{
         //  Beyaz Sah'in yerinin bulunmasi:
         Cell whiteKingsPosition = whiteKingsPosition(board);
 
+
         //  Sol üstten baslayarak tum hucreleri kontrol eder ve kontrol ettigi hucredeki tas siyahsa
         //  Sah'in hucresine gidip gidemeyecegini kontrol eder.Gidebiliyorsa true dondurur.
         for (int y = 0; y <= 7; y++){
             for (int x = 0; x <= 7; x++){
-                if (board.getCell(x, y).getPiece() != null && !board.getCell(x, y).getPiece().isWhite() &&
+                if (board.getCell(x, y).getPiece() != null &&
                         board.getCell(x, y).getPiece().canMove(board.getCell(x, y), whiteKingsPosition, board)){
                     return true;
                 }
@@ -145,12 +145,13 @@ public class King extends Piece{
 
         //  Sah'in yerinin bulunmasi:
         Cell blackKingsPosition = blackKingsPosition(board);
+        Cell controlCell;
         //  Sol üstten baslayarak tum hucreleri kontrol eder ve kontrol ettigi hucredeki tas beyazsa
         //  Sah'in hucresine gidip gidemeyecegini kontrol eder.Gidebiliyorsa true dondurur.
         for (int y = 0; y <= 7; y++){
             for (int x = 0; x <= 7; x++){
-                if (board.getCell(x, y).getPiece() != null && board.getCell(x, y).getPiece().isWhite() &&
-                        board.getCell(x, y).getPiece().canMove(board.getCell(x, y), blackKingsPosition, board)){
+                controlCell = board.getCell(x, y);
+                if (controlCell.getPiece() != null && controlCell.getPiece().isWhite() && controlCell.getPiece().canMove(controlCell, blackKingsPosition, board)){
                     return true;
                 }
             }

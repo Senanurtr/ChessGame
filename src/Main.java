@@ -4,6 +4,7 @@ public class Main {
     public static void main(String[] args) {
 
         Game game = new Game();
+
         Player player0 = new Player(true);
         Player player1 = new Player(false);
 
@@ -11,14 +12,25 @@ public class Main {
 
         while(game.getStatus() == GameStatus.ACTIVE){
 
-            for (int y = 0; y <= 7; y++){
-                for (int x = 0; x <= 7; x++){
-                    if (game.getBoard().getCell(x, y).getPiece() != null){
-                        System.out.print(game.getBoard().getCell(x, y).getPiece().getType());
-                        System.out.print(" ");
-                    }else {
-                        System.out.print("-");
-                        System.out.print(" ");
+            for (int column = 0; column <= 8; column++){
+                System.out.println("+----+----+----+----+----+----+----+----+");
+
+                if (column != 8){
+                    for (int row = 0; row < 8; row++){
+                        String color;
+                        if (game.getBoard().getCell(row, column).getPiece() != null && game.getBoard().getCell(row, column).getPiece().isWhite()){
+                            color = "W";
+                        }else {
+                            color = "B";
+                        }
+                        if (game.getBoard().getCell(row, column).getPiece() != null){
+                            System.out.print("| " + color + game.getBoard().getCell(row, column).getPiece().getType() + " ");
+                        }else {
+                            System.out.print("|    ");
+                        }
+                        if (row == 7){
+                            System.out.print("|");
+                        }
                     }
                 }
                 System.out.println();
@@ -37,8 +49,6 @@ public class Main {
             System.out.print("\nHamle yapacaginiz tasin y kordinatini giriniz: ");
             int startY = scanner.nextInt() - 1;
 
-
-
             System.out.print("\nTasin gidecegi yerin x kordinatini giriniz: ");
             int destinationX = scanner.nextInt() - 1;
             System.out.print("\nTasin gidecegi yerin y kordinatini giriniz: ");
@@ -47,9 +57,6 @@ public class Main {
             Move move = new Move(game.getBoard().getCell(startX, startY), game.getBoard().getCell(destinationX, destinationY), player0);
             game.makeMove(move, game.getCurrentTurn());
 
-
         }
-
     }
-
 }

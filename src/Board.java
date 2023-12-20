@@ -20,8 +20,8 @@ public class Board {
         cells[0][0] = new Cell(0, 0, new Rook(false));
         cells[0][1] = new Cell(1, 0, new Knight(false));
         cells[0][2] = new Cell(2, 0, new Bishop(false));
-        cells[0][3] = new Cell(3, 0, new King(false));
-        cells[0][4] = new Cell(4, 0, new Queen(false));
+        cells[0][3] = new Cell(3, 0, new Queen(false));
+        cells[0][4] = new Cell(4, 0, new King(false));
         cells[0][5] = new Cell(5, 0, new Bishop(false));
         cells[0][6] = new Cell(6, 0, new Knight(false));
         cells[0][7] = new Cell(7, 0, new Rook(false));
@@ -49,8 +49,8 @@ public class Board {
         cells[7][0] = new Cell(0, 7, new Rook(true));
         cells[7][1] = new Cell(1, 7, new Knight(true));
         cells[7][2] = new Cell(2, 7, new Bishop(true));
-        cells[7][3] = new Cell(3, 7, new King(true));
-        cells[7][4] = new Cell(4, 7, new Queen(true));
+        cells[7][3] = new Cell(3, 7, new Queen(true));
+        cells[7][4] = new Cell(4, 7, new King(true));
         cells[7][5] = new Cell(5, 7, new Bishop(true));
         cells[7][6] = new Cell(6, 7, new Knight(true));
         cells[7][7] = new Cell(7, 7, new Rook(true));

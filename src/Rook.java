@@ -3,7 +3,7 @@ import javax.swing.*;
 public class Rook extends Piece {
     private String type = "R";
     private final String path;
-    private boolean castlingDone;   //Rok yapip yapmama durununu kontrol etmek icin degisken.
+    private boolean castlingDone = false;   //Rok yapip yapmama durununu kontrol etmek icin degisken.
     public Rook(boolean white) {
         super(white);
         if (isWhite()){

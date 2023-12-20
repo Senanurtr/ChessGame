@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class Move {
     private Cell start;
     private Cell destination;
@@ -16,33 +18,80 @@ public class Move {
         return this.destination;
     }
 
-
-
     //  Yapilan hamle sonucu Sah'in tehdit altinda kalip kalmayacagi durumu kontrol eder.
     //  Tehdit altinda kaliyorsa true dondurur.
     public boolean resultInThreat(Cell start, Cell destination, Board board, Player player){
 
+        Cell copyOfStart = new Cell(start.getX(), start.getY(), start.getPiece());
+        Cell copyOfDestination = new Cell(destination.getX(), destination.getY(), destination.getPiece());
 
 
-        if (start.getPiece().canMove(start, destination, board)){
+        if (start.getPiece() != null && start.getPiece().canMove(start, destination, board)){
 
             destination.setPiece(start.getPiece());
             start.setPiece(null);
         }
-        if (player.isWhiteSide()){
+        Cell whiteKingsPosition = whiteKingsPosition(board);
+        Cell blackKingPosition = blackKingsPosition(board);
+        if (player.isWhiteSide() && whiteKingsPosition.getPiece() instanceof King &&
+                ((King) whiteKingsPosition.getPiece()).isWhiteUnderThreat(board)){
 
-            Cell whiteKingsPosition = whiteKingsPosition(board);
-            return whiteKingsPosition.getPiece() instanceof King &&
-                    ((King) whiteKingsPosition.getPiece()).isWhiteUnderThreat(board);
+            start.setPiece(copyOfStart.getPiece());
+            destination.setPiece(copyOfDestination.getPiece());
+            return true;
+        } else if (!player.isWhiteSide() && blackKingPosition.getPiece() instanceof King &&
+                (((King) blackKingPosition.getPiece()).isBlackUnderThreat(board))){
 
-        } else if (!player.isWhiteSide()) {
-            Cell blackKingPosition = blackKingsPosition(board);
-            return blackKingPosition.getPiece() instanceof King &&
-                    (((King) blackKingPosition.getPiece()).isBlackUnderThreat(board));
+            start.setPiece(copyOfStart.getPiece());
+            destination.setPiece(copyOfDestination.getPiece());
+            return true;
         }
+
+        start.setPiece(copyOfStart.getPiece());
+        destination.setPiece(copyOfDestination.getPiece());
         return false;
+
     }
 
+    Scanner scanner = new Scanner(System.in);
+    public void promote(Cell destination){
+        if (movingPiece instanceof Pawn && (movingPiece.isWhite() && destination.getY() == 0) || (!movingPiece.isWhite() && destination.getY() == 7)){
+            boolean Loop = true;
+            while (Loop){
+                System.out.print("\nPiyonu terfi ettirmek istediginiz tas turunu seciniz: ");
+                String choice = scanner.next();
+                switch (choice){
+                    case "K":
+                    case "k":
+                        destination.setPiece(new Knight(movingPiece.isWhite()));
+                        break;
+
+                    case "Q":
+                    case "q":
+                        destination.setPiece(new Queen(movingPiece.isWhite()));
+                        break;
+
+                    case "B":
+                    case "b":
+                        destination.setPiece(new Bishop(movingPiece.isWhite()));
+                        break;
+
+                    case "R":
+                    case "r":
+                        destination.setPiece(new Rook(movingPiece.isWhite()));
+                        break;
+
+                    case "X":
+                    case "x":
+                        Loop = false;
+                        break;
+
+                    default:
+                        System.out.println("Lutfen gecerli tas giriniz.");
+                }
+            }
+        }
+    }
 
     //  Beyaz Sah'in yerini bulan fonksiyon:
     public Cell whiteKingsPosition(Board board){
@@ -65,7 +114,8 @@ public class Move {
             for (int x = 0; x <=7; x++){
                 if (board.getCell(x, y).getPiece() instanceof King && !board.getCell(x, y).getPiece().isWhite()) {
                     blackKingsPosition = board.getCell(x, y);
-                    break;
+                    x = 7;
+                    y = 7;
                 }
             }
         }
