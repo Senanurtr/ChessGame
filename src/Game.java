@@ -63,10 +63,12 @@ public class Game {
         if (destinationPiece != null){
 
             destinationPiece.setAlive(false);
+            System.out.println("taş alındı");
         }
 
         //  Yapilan hamle sonucu hamle yapan kisinin Sah'i tehdit altinda kaliyor mu?
         if (move.resultInThreat(move.getStart(), move.getDestination(), board, currentTurn)){
+            System.out.println("yapılan hamle sonucu şah tehdit altında kalıyor");
             return false;
         }
 
@@ -86,6 +88,7 @@ public class Game {
                 //  Kalenin hareket etmesi
                 board.getCell(0, 7).setPiece(null);
                 board.getCell(2, 7).setPiece(selectedRook);
+                System.out.println("Beyaz kısa rok yaptı");
 
             } else if (move.getStart().getPiece().isWhite() && move.getDestination().getY() == 7) {
                 //  Sahin hareket etmesi
@@ -97,6 +100,7 @@ public class Game {
                 //  Kalenin hareket etmesi
                 board.getCell(7, 7).setPiece(null);
                 board.getCell(4, 7).setPiece(selectedRook);
+                System.out.println("Beyaz uzun rok yaptı");
 
 
 
@@ -112,6 +116,7 @@ public class Game {
                 //  Kalenin hareket etmesi
                 board.getCell(0, 0).setPiece(null);
                 board.getCell(2, 0).setPiece(selectedRook);
+                System.out.println("Siyah kısa rok yaptı");
 
 
             } else if (!move.getStart().getPiece().isWhite() && move.getDestination().getX() == 5) {
@@ -124,12 +129,13 @@ public class Game {
                 //  Kalenin hareket etmesi
                 board.getCell(7, 0).setPiece(null);
                 board.getCell(4, 0).setPiece(selectedRook);
-
+                System.out.println("Siyah uzun rok yaptı");
 
             }
 
         }else {
             //  Tasin hareket etmesi:
+            System.out.println("hamle yapıldı.");
             move.getDestination().setPiece(selectedPiece);
             move.getStart().setPiece(null);
         }
