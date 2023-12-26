@@ -3,11 +3,18 @@ import javax.swing.*;
 public class Pawn extends Piece{
     private String type = "P";
     private final String path;
+    private boolean moved = false;  //Eger hareket etmemis ise ilk hareketinde iki kare ilerleyebilme opsiyonu olmali
+
     @Override
-    public Icon getPath() {
+    public Icon getIcon() {
         return new ImageIcon(path);
     }
-    private boolean moved = false;  //Eger hareket etmemis ise ilk hareketinde iki kare ilerleyebilme opsiyonu olmali
+    @Override
+    public String getPath() {
+        return path;
+    }
+
+
     public Pawn(boolean white){
         super(white);
         if (isWhite()){
@@ -44,7 +51,7 @@ public class Pawn extends Piece{
             return !destination.getPiece().isWhite();
 
             //  Siyah icin carprazindaki tasi yeme durumu:
-        }else if (!start.getPiece().isWhite() && Math.abs(destination.getX()) - start.getX() == 1 && destination.getY() - start.getY() == 1){
+        }else if (!start.getPiece().isWhite() && Math.abs(destination.getX() - start.getX()) == 1 && destination.getY() - start.getY() == 1){
             return destination.getPiece().isWhite();
 
             //  Beyaz icin iki kare ilerleme durumu:
