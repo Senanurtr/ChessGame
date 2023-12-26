@@ -6,7 +6,8 @@ public abstract class Piece {
     private boolean white;
     private boolean alive = true;
     private String type;
-    public abstract Icon getPath();
+    public abstract Icon getIcon();
+    public abstract String getPath();
     public Piece(boolean white){
         this.white = white;
     }
