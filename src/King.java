@@ -4,11 +4,6 @@ public class King extends Piece{
     private String type = "S";
     private final String path;
 
-    @Override
-    public Icon getPath() {
-        return new ImageIcon(path);
-    }
-
     private boolean alive = true;
     private boolean castlingDone = false;   //  Eger sah hareket etmis ise oyuncu rok yapamamali.
     public King(boolean white){
@@ -17,6 +12,16 @@ public class King extends Piece{
             path="src/images/wk.png";
         }else path="src/images/bk.png";
     }
+    @Override
+    public Icon getIcon() {
+        return new ImageIcon(path);
+    }
+
+    @Override
+    public String getPath() {
+        return path;
+    }
+
     public String getType(){
         return this.type;
     }
@@ -42,19 +47,19 @@ public class King extends Piece{
             }
 
             //  Sah beyaz ise rok yapma durumu.
-        }else if(start.getPiece().isWhite() && !this.hasCastlingDone() && destination.getX() == 1 && destination.getY() == 7) {
+        }else if(start.getPiece().isWhite() && !this.hasCastlingDone() && destination.getX() == 6 && destination.getY() == 7) {
 
             return isCastlingMove(start, destination, board);
-        }else if(start.getPiece().isWhite() && !this.hasCastlingDone() && destination.getX() == 5 && destination.getY() == 7){
+        }else if(start.getPiece().isWhite() && !this.hasCastlingDone() && destination.getX() == 2 && destination.getY() == 7){
 
             return isCastlingMove(start, destination, board);
 
 
             //  Sah siyah ise rok yapma durumu.
-        }else if (!start.getPiece().isWhite() && !this.hasCastlingDone() && destination.getX() == 1 && destination.getY() == 0){
+        }else if (!start.getPiece().isWhite() && !this.hasCastlingDone() && destination.getX() == 6 && destination.getY() == 0){
 
             return isCastlingMove(start, destination, board);
-        } else if (!start.getPiece().isWhite() && !this.hasCastlingDone() && destination.getX() == 5 && destination.getY() == 0) {
+        } else if (!start.getPiece().isWhite() && !this.hasCastlingDone() && destination.getX() == 2 && destination.getY() == 0) {
 
             return isCastlingMove(start, destination, board);
         }else
@@ -64,27 +69,27 @@ public class King extends Piece{
 
     //  Girilen parametrelere gore Sah'in yaptigi hareketin rok olup olmadigini kontrol eden fonksiyon.
     public boolean isCastlingMove(Cell start, Cell destination, Board board){
-        if (start.getPiece().isWhite() && !this.hasCastlingDone() && destination.getX() == 1 && destination.getY() == 7){
+        if (start.getPiece().isWhite() && !this.hasCastlingDone() && destination.getX() == 6 && destination.getY() == 7){
 
-            return board.getCell(2, 7).getPiece() == null && board.getCell(0, 7).getPiece() instanceof Rook && !((Rook) board.getCell(0, 7).getPiece()).hasCastlingDone();
+            return board.getCell(5, 7).getPiece() == null && board.getCell(7, 7).getPiece() instanceof Rook && !((Rook) board.getCell(7, 7).getPiece()).hasCastlingDone();
 
 
-        } else if (start.getPiece().isWhite() && !this.hasCastlingDone() && destination.getX() == 5 && destination.getY() == 7) {
+        } else if (start.getPiece().isWhite() && !this.hasCastlingDone() && destination.getX() == 2 && destination.getY() == 7) {
 
-            return board.getCell(4, 7).getPiece() == null && board.getCell(5, 7).getPiece() == null &&
-                    board.getCell(6, 7).getPiece() == null && board.getCell(7, 7).getPiece() instanceof Rook &&
-                    !((Rook) board.getCell(7, 7).getPiece()).hasCastlingDone();
+            return board.getCell(3, 7).getPiece() == null && board.getCell(2, 7).getPiece() == null &&
+                    board.getCell(1, 7).getPiece() == null && board.getCell(0, 7).getPiece() instanceof Rook &&
+                    !((Rook) board.getCell(0, 7).getPiece()).hasCastlingDone();
 
-        } else if (!start.getPiece().isWhite() && !this.hasCastlingDone() && destination.getX() == 1 && destination.getY() == 0) {
+        } else if (!start.getPiece().isWhite() && !this.hasCastlingDone() && destination.getX() == 6 && destination.getY() == 0) {
 
-            return board.getCell(2, 0).getPiece() == null && board.getCell(0, 0).getPiece() instanceof Rook
-                    && !((Rook) board.getCell(0, 0).getPiece()).hasCastlingDone();
+            return board.getCell(5, 0).getPiece() == null && board.getCell(7, 0).getPiece() instanceof Rook
+                    && !((Rook) board.getCell(7, 0).getPiece()).hasCastlingDone();
 
-        }else if(!start.getPiece().isWhite() && !this.hasCastlingDone() && destination.getX() == 5 && destination.getY() == 0){
+        }else if(!start.getPiece().isWhite() && !this.hasCastlingDone() && destination.getX() == 2 && destination.getY() == 0){
 
-            return board.getCell(4, 0).getPiece() == null && board.getCell(5, 0).getPiece() == null &&
-                    board.getCell(6, 0).getPiece() == null && board.getCell(7, 0).getPiece() instanceof Rook &&
-                    !((Rook) board.getCell(7, 0).getPiece()).hasCastlingDone();
+            return board.getCell(3, 0).getPiece() == null && board.getCell(2, 0).getPiece() == null &&
+                    board.getCell(1, 0).getPiece() == null && board.getCell(0, 0).getPiece() instanceof Rook &&
+                    !((Rook) board.getCell(0, 0).getPiece()).hasCastlingDone();
 
         }else
             return false;
@@ -190,7 +195,10 @@ public class King extends Piece{
 
                                             minatorCell.setPiece(white);
                                             // yedikten sonraki durum için isCheckmate tekrar kontrol
-                                            return isCheckmate(board);
+                                            boolean checkmate = isCheckmate(board);
+
+                                            minatorCell.setPiece(minator);
+                                            return checkmate;
 
                                         }
                                     }
@@ -270,9 +278,13 @@ public class King extends Piece{
                                         Piece black = board.getCell(i,j).getPiece();
                                         Cell blackCell = board.getCell(i,j);
                                         if (black.canMove(blackCell,minatorCell,board)){
-                                            //yiyebiliyorsa
+
                                             minatorCell.setPiece(black);
-                                            return isCheckmate(board);
+                                            // yedikten sonraki durum için isCheckmate tekrar kontrol
+                                            boolean checkmate = isCheckmate(board);
+
+                                            minatorCell.setPiece(minator);
+                                            return checkmate;
                                         }
                                     }
                                 }

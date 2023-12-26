@@ -15,9 +15,14 @@ public class Knight extends Piece {
     }
 
     @Override
-    public Icon getPath() {
+    public Icon getIcon() {
         return new ImageIcon(path);
     }
+    @Override
+    public String getPath() {
+        return path;
+    }
+
 
     @Override
     public boolean canMove(Cell start, Cell destination, Board board) {

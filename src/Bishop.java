@@ -15,8 +15,13 @@ public class Bishop extends Piece {
     }
 
     @Override
-    public Icon getPath() {
+    public Icon getIcon() {
         return new ImageIcon(path);
+    }
+
+    @Override
+    public String getPath() {
+        return path;
     }
 
     @Override
@@ -43,6 +48,7 @@ public class Bishop extends Piece {
             // Yol boyunca herhangi bir taş var mı kontrol
             while (x != destination.getX() && y != destination.getY()) {
                 if (board.getCell(x, y).getPiece() != null) {
+                    System.out.println("yolda taş var");
                     return false; // Yolda bir taş varsa gidemez
                 }
                 x += xDir;

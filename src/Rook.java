@@ -10,10 +10,14 @@ public class Rook extends Piece {
             path="src/images/wr.png";
         }else path="src/images/br.png";
     }
+    @Override
+    public Icon getIcon() {
+        return new ImageIcon(path);
+    }
 
     @Override
-    public Icon getPath() {
-        return new ImageIcon(path);
+    public String getPath() {
+        return path;
     }
 
     public String getType(){

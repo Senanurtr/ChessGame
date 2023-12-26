@@ -4,9 +4,14 @@ public class Queen extends Piece {
     private String type = "Q";
     private final String path;
     @Override
-    public Icon getPath() {
+    public Icon getIcon() {
         return new ImageIcon(path);
     }
+    @Override
+    public String getPath() {
+        return path;
+    }
+
     public Queen(boolean white) {
         super(white);
         if (isWhite()){
