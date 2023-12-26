@@ -13,6 +13,18 @@ public class Board {
         return this.cells[y][x];
     }
 
+    public Cell getCell(int id) {
+        int row = id / 8;
+        int col = id % 8;
+
+        if (row >= 0 && row < 8 && col >= 0 && col < 8) {
+            return this.cells[row][col];
+        } else {
+            throw new IllegalArgumentException("hatalı id " + id);
+        }
+    }
+
+
     public void resetBoard(){
 
         //  Siyah taslarin baslatilmasi
@@ -26,7 +38,7 @@ public class Board {
         cells[0][6] = new Cell(6, 0, new Knight(false));
         cells[0][7] = new Cell(7, 0, new Rook(false));
 
-        cells[1][0] = new Cell(0, 0, new Pawn(false));
+        cells[1][0] = new Cell(0, 1, new Pawn(false));
         cells[1][1] = new Cell(1, 1, new Pawn(false));
         cells[1][2] = new Cell(2, 1, new Pawn(false));
         cells[1][3] = new Cell(3, 1, new Pawn(false));
