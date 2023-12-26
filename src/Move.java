@@ -64,25 +64,24 @@ public class Move {
                     case "K":
                     case "k":
                         destination.setPiece(new Knight(movingPiece.isWhite()));
+                        Loop = false;
                         break;
 
                     case "Q":
                     case "q":
                         destination.setPiece(new Queen(movingPiece.isWhite()));
+                        Loop = false;
                         break;
 
                     case "B":
                     case "b":
                         destination.setPiece(new Bishop(movingPiece.isWhite()));
+                        Loop = false;
                         break;
 
                     case "R":
                     case "r":
                         destination.setPiece(new Rook(movingPiece.isWhite()));
-                        break;
-
-                    case "X":
-                    case "x":
                         Loop = false;
                         break;
 
