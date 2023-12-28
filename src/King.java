@@ -35,11 +35,16 @@ public class King extends Piece{
     @Override
     public boolean canMove(Cell start, Cell destination, Board board){
 
+        if ( destination.getPiece() != null ){
+            if (start.getPiece().isWhite()==destination.getPiece().isWhite()) {
+                return false;
+            }
+        }
         //  Sah X ve Y ekseninde en fazla 1er kare ilerleyebilmeli.
         if (Math.abs(start.getX() - destination.getX()) <= 1 && Math.abs(start.getY() - destination.getY()) <= 1){
 
             //  Hareket edecek tasin gidecegi konumda ayni renk tas var ise o konuma gidememeli.
-            if ((start.getPiece().isWhite()==destination.getPiece().isWhite()) && destination.getPiece() != null ){
+            if (start.getPiece().isWhite() && destination.getPiece() != null && destination.getPiece().isWhite()){
                 return false;
             }
             else{

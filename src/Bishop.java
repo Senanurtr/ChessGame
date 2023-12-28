@@ -28,8 +28,10 @@ public class Bishop extends Piece {
     public boolean canMove(Cell start, Cell destination, Board board) {
 
         // Hedef hücrede aynı renkte başka bir taş varsa
-        if ( (start.getPiece().isWhite()==destination.getPiece().isWhite() ) &&  destination.getPiece() != null ) {
-            return false;
+        if ( destination.getPiece() != null ){
+            if (start.getPiece().isWhite()==destination.getPiece().isWhite()) {
+                return false;
+            }
         }
 
         //Fil X'de ne kadar yol alıyorsa Y'de de o kadar yol alır onun için değişken
