@@ -39,7 +39,7 @@ public class King extends Piece{
         if (Math.abs(start.getX() - destination.getX()) <= 1 && Math.abs(start.getY() - destination.getY()) <= 1){
 
             //  Hareket edecek tasin gidecegi konumda ayni renk tas var ise o konuma gidememeli.
-            if (start.getPiece().isWhite() && destination.getPiece() != null && destination.getPiece().isWhite()){
+            if ((start.getPiece().isWhite()==destination.getPiece().isWhite()) && destination.getPiece() != null ){
                 return false;
             }
             else{
