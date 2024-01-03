@@ -165,392 +165,236 @@ public class King extends Piece{
         return false;
     }
     public boolean isCheckmate(Board board){
+
         if (isWhiteUnderThreat(board)){    //Beyaz şah tehdit altında ise
 
             //önce tehdit eden taşı alabiliyor muyuz bakılır
             //alınamıyorsa önüne bir taş koyabilir miyiz buna bakılır
             //koyulamıyorsa şahın gidecek yeri kaldı mı diye bakılır
 
+            Cell kingCell = whiteKingsPosition(board);
 
-            int wX = whiteKingsPosition(board).getX();
-            int wY = whiteKingsPosition(board).getY();
-            Piece wKing = whiteKingsPosition(board).getPiece();
-            Cell kingCell = new Cell(wX,wY,wKing);
+            if (canTakeMinator(board,kingCell,true)){
+                return false;
+            } else if (canDefendThreat(board,kingCell,true)) {
+                return false;
+            } else if (canEscapeCheck(board,kingCell,true)) {
+                return false;
+            }else return true;
 
-            for (int iy=0; iy<8; iy++){
-                for (int ix=0; ix<8; ix++){
-                    //eğer taş varsa ve beyaz değilse
-                    if ( !(board.getCell(ix,iy).getPiece()==null)  &&  !board.getCell(ix,iy).getPiece().isWhite()){
-                        Piece minator = board.getCell(ix,iy).getPiece();
-                        Cell minatorCell = board.getCell(ix,iy);
-                        //ve şahı tehdit ediyorsa
-                        if (minator.canMove(minatorCell,kingCell,board)){
-
-                            for (int i =0 ; i<8 ; i++){
-                                for (int j=0; j<8; j++){
-                                    //herhangi bir beyaz taş tehdit eden taşı alabiliyor mu
-                                    if (!(board.getCell(i,j).getPiece()==null)  &&  board.getCell(i,j).getPiece().isWhite()){
-                                        Piece white = board.getCell(i,j).getPiece();
-                                        Cell whiteCell = board.getCell(i,j);
-                                        if (white.canMove(whiteCell,minatorCell,board)){   //alabiliyorsa
-
-                                            minatorCell.setPiece(white);
-                                            boolean checkmate = isCheckmate(board); // yedikten sonraki durum için isCheckmate tekrar kontrol
-                                            minatorCell.setPiece(minator);
-                                            return checkmate;
-
-                                        }
-                                    }
-                                }
-                            }
-
-                            // şahı tehdit eden bir taş var ve bizim taşlar onu alamıyor
-                            // önüne bir taş koyarak engelleyebilir miyiz?
-
-                            int kingMindiffX = Math.abs(minatorCell.getX() - kingCell.getX());
-                            int kingMindiffY = Math.abs(minatorCell.getY()-kingCell.getY());
-
-                            if ( kingMindiffX == 0 ){
-                                // minator dikeyde
-
-                                // aradaki cell sayısı kadar dönecek döngü
-                                for ( int y = Math.abs(kingCell.getY()-minatorCell.getY())-1 ; y>0 ; y--){
-                                    for (int ki =0 ; ki<8 ; ki++){
-                                        for (int kj=0; kj<8; kj++){
-
-                                            if (!(board.getCell(ki,kj).getPiece()==null)  &&  board.getCell(ki,kj).getPiece().isWhite()){
-
-                                                Piece koruyucu = board.getCell(ki,kj).getPiece();
-                                                Cell koruyucuCell = board.getCell(ki,kj);
-                                                Cell arananCell = null;
-
-                                                if (kingCell.getY()-minatorCell.getY()<0){
-                                                    //şah üstte
-                                                    arananCell = board.getCell(kingCell.getX(),kingCell.getY()+y);
-                                                }else if (kingCell.getY()-minatorCell.getY()>0){
-                                                    //şah altta
-                                                    arananCell = board.getCell(kingCell.getX(),kingCell.getY()-y);
-                                                }
-
-                                                if (koruyucu.canMove(koruyucuCell,arananCell,board)){
-                                                    return false;
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                }
-
-
-                            } else if (kingMindiffY == 0) {
-                                // minator yatayda
-
-                                // aradaki cell sayısı kadar dönecek döngü
-                                for ( int x = Math.abs(kingCell.getX()-minatorCell.getX())-1 ; x>0 ; x--){
-
-                                    for (int ki =0 ; ki<8 ; ki++){
-                                        for (int kj=0; kj<8; kj++){
-                                            if (!(board.getCell(ki,kj).getPiece()==null)  &&  board.getCell(ki,kj).getPiece().isWhite()){
-
-                                                Piece koruyucu = board.getCell(ki,kj).getPiece();
-                                                Cell koruyucuCell = board.getCell(ki,kj);
-                                                Cell arananCell = null;
-
-                                                if (kingCell.getX()-minatorCell.getX()>0){
-                                                    //şah sağda
-                                                    arananCell = board.getCell(kingCell.getX()-x,kingCell.getY());
-
-                                                } else if (kingCell.getX()-minatorCell.getX()<0) {
-                                                    //şah solda
-                                                    arananCell = board.getCell(kingCell.getX()+x,kingCell.getY());
-                                                }
-
-                                                if (koruyucu.canMove(koruyucuCell,arananCell,board)){
-                                                    return false;
-                                                }
-                                            }
-
-                                        }
-                                    }
-
-                                }
-
-                            } else if (kingMindiffX == kingMindiffY) {
-                                // minator çaprazda
-
-                                // aradaki cell sayısı kadar dönecek döngü
-                                for (int c = Math.abs(kingMindiffX) - 1; c > 0; c--) {
-
-                                    for (int ki = 0; ki < 8; ki++) {
-                                        for (int kj = 0; kj < 8; kj++) {
-
-                                            if (!(board.getCell(ki, kj).getPiece() == null) && board.getCell(ki, kj).getPiece().isWhite()) {
-
-                                                Piece koruyucu = board.getCell(ki, kj).getPiece();
-                                                Cell koruyucuCell = board.getCell(ki, kj);
-                                                Cell arananCell = null;
-
-                                                if (kingCell.getX() < minatorCell.getX() && kingCell.getY() < minatorCell.getY()) {
-                                                    // şah sağ üst
-                                                    arananCell = board.getCell(kingCell.getX() - c, kingCell.getY() + c);
-                                                } else if (kingCell.getX() < minatorCell.getX() && kingCell.getY() > minatorCell.getY()) {
-                                                    // şah sağ alt
-                                                    arananCell = board.getCell(kingCell.getX() - c, kingCell.getY() - c);
-                                                } else if (kingCell.getX() > minatorCell.getX() && kingCell.getY() < minatorCell.getY()) {
-                                                    // şah sol üst
-                                                    arananCell = board.getCell(kingCell.getX() + c, kingCell.getY() - c);
-                                                } else {
-                                                    // şah sol alt
-                                                    arananCell = board.getCell(kingCell.getX() - c, kingCell.getY() - c);
-                                                }
-
-                                                if (koruyucu.canMove(koruyucuCell, arananCell, board)) {
-                                                    return false;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-
-                            //şahın etrafındaki 8 kare için kontrol
-                            Cell[] cells={new Cell(wX-1,wY-1,null),
-                                    new Cell(wX,wY-1,null),
-                                    new Cell(wX+1,wY-1,null),
-                                    new Cell(wX-1,wY,null),
-                                    new Cell(wX+1,wY,null),
-                                    new Cell(wX-1,wY+1,null),
-                                    new Cell(wX,wY+1,null),
-                                    new Cell(wX+1,wY+1,null)};
-
-                            boolean[] booleans = new boolean[]{true,true,true,true,true,true,true,true};
-
-                            for (int i=0;i<8;i++){
-                                //şah o kareye gidebiliyor mu
-                                if (wKing.canMove(kingCell,cells[i],board)){
-                                    //gidebiliyor ama orası başka bir taş tarafından tehdit ediliyor mu?
-                                    for (int yy=0; yy<8; yy++){
-                                        for (int xx=0; xx<8; xx++){
-                                            //eğer taş varsa ve beyaz değilse
-                                            if ( !(board.getCell(xx,yy).getPiece()==null)  &&  !board.getCell(xx,yy).getPiece().isWhite()){
-                                                Piece minator2 = board.getCell(xx,yy).getPiece();
-                                                Cell minator2Cell = board.getCell(xx,yy);
-                                                //ve şahın gidebileceği yeri tehdit ediyorsa
-                                                if (minator2.canMove(minator2Cell,kingCell,board)){
-                                                    booleans[i]=false; // şah o kareye gidemez
-                                                }
-                                            }
-                                        }
-                                    }
-                                }else booleans[i]=false; //gidemiyor
-                            }
-
-                            for (int i=0;i<8;i++){
-                                if (booleans[i]){  //8 kareden herhangi birine gidebiliyorsa
-                                    return false;  //mat yok
-                                }
-                            }return true;   //hiçbirine gidemiyorsa mat
-
-                        }
-                    }
-                }
-            }
         }else if (isBlackUnderThreat(board)){   //siyah şah tehdit altında ise
 
+            Cell kingCell = blackKingsPosition(board);
 
-            //önce tehdit eden taşı yiyebiliyor muyuz bakılır
-            //yenilmiyorsa şahın gidecek yeri kaldı mı diye bakılır
+            if (canTakeMinator(board,kingCell,false)){
+                return false;
+            } else if (canDefendThreat(board,kingCell,false)) {
+                return false;
+            } else if (canEscapeCheck(board,kingCell,false)) {
+                return false;
+            }else return true;
+        }
+        //iki renk de tehdit altında değilse
+        return false;
+    }
 
+    private Cell findMinator(Board board, Cell kingCell, boolean isWhite){
+        for (int y =0 ; y<8 ; y++){
+            for (int x = 0; x<8 ; x++){
 
-            int bX = blackKingsPosition(board).getX();
-            int bY = blackKingsPosition(board).getY();
-            Piece bKing = blackKingsPosition(board).getPiece();
-            Cell kingCell = new Cell(bX,bY,bKing);
+                //bütün celllere bak eğer taş varsa ve bizden değilse
+                if ( board.getCell(x,y).getPiece()!=null && board.getCell(x,y).getPiece().isWhite() != isWhite ){
+                    Piece minator = board.getCell(x,y).getPiece();
+                    Cell minatorCell = board.getCell(x,y);
+                    // ve şahı tehdit ediyorsa
+                    if (minator.canMove(minatorCell,kingCell,board)){
+                        return minatorCell;
+                    }
+                }
+            }
+        }return null;
+    }
+    private boolean canTakeMinator(Board board, Cell kingCell, boolean isWhite){
+        //herhangi bir taşımız tehdit eden taşı alabiliyor mu
 
+        Cell minatorCell = findMinator(board,kingCell,isWhite);
 
-            for (int iy=0; iy<8; iy++){
-                for (int ix=0; ix<8; ix++){
-                    //eğer taş varsa ve beyazsa
-                    if ( !(board.getCell(ix,iy).getPiece()==null)  &&  board.getCell(ix,iy).getPiece().isWhite()){
-                        Piece minator = board.getCell(ix,iy).getPiece();
-                        Cell minatorCell = board.getCell(ix,iy);
-                        //ve şahı tahdit ediyorsa
-                        if (minator.canMove(minatorCell,kingCell,board)){
+        if (minatorCell!=null){
+            for (int i =0 ; i<8 ; i++){
+                for (int j=0; j<8; j++){
 
-                            for (int i =0 ; i<8 ; i++){
-                                for (int j=0; j<8; j++){
-                                    //herhangi bir siyah taş tehdit eden taşı yiyebiliyor mu
-                                    if (!(board.getCell(i,j).getPiece()==null)  &&  !board.getCell(i,j).getPiece().isWhite()){
-                                        Piece black = board.getCell(i,j).getPiece();
-                                        Cell blackCell = board.getCell(i,j);
-                                        if (black.canMove(blackCell,minatorCell,board)){
+                    if (!(board.getCell(i,j).getPiece()==null)  &&  board.getCell(i,j).getPiece().isWhite() == isWhite){
 
-                                            minatorCell.setPiece(black);
-                                            // yedikten sonraki durum için isCheckmate tekrar kontrol
-                                            boolean checkmate = isCheckmate(board);
-                                            minatorCell.setPiece(minator);
-                                            return checkmate;
+                        Piece defender = board.getCell(i,j).getPiece();
+                        Cell defenderCell = board.getCell(i,j);
 
-                                        }
-                                    }
+                        if (defender.canMove(defenderCell,minatorCell,board)){   //alabiliyorsa
+                            return true;
+                        }
+                    }
+                }
+            } return false;
+        }
+        return false;
+    }
+
+    private boolean canDefendThreat(Board board, Cell kingCell, boolean isWhite){
+
+        // önüne bir taş koyarak engelleyebilir miyiz?
+
+        Cell minatorCell = findMinator(board,kingCell,isWhite);
+
+        if (minatorCell!=null){
+
+            int diffX = Math.abs(minatorCell.getX() - kingCell.getX());
+            int diffY = Math.abs(minatorCell.getY() - kingCell.getY());
+
+            if ( diffX == 0 ){
+                // minator dikeyde
+
+                // aradaki cell sayısı kadar dönecek döngü
+                for ( int y = Math.abs(kingCell.getY()-minatorCell.getY())-1 ; y>0 ; y--){
+                    for (int i =0 ; i<8 ; i++){
+                        for (int j=0; j<8; j++){
+
+                            if ( board.getCell(i,j).getPiece()!=null  &&  board.getCell(i,j).getPiece().isWhite()==isWhite){
+
+                                Piece defender = board.getCell(i,j).getPiece();
+                                Cell defenderCell = board.getCell(i,j);
+                                Cell searchCell = null;
+
+                                if (kingCell.getY()-minatorCell.getY()<0){
+                                    //şah üstte
+                                    searchCell = board.getCell(kingCell.getX(),kingCell.getY()+y);
+                                }else if (kingCell.getY()-minatorCell.getY()>0){
+                                    //şah altta
+                                    searchCell = board.getCell(kingCell.getX(),kingCell.getY()-y);
+                                }
+
+                                if (defender.canMove(defenderCell,searchCell,board)){
+                                    return true;
                                 }
                             }
+                        }
+                    }
+                }
+            } else if (diffY == 0) {
+                // minator yatayda
 
-                            // şahı tehdit eden bir taş var ve bizim taşlar onu alamıyor
-                            // önüne bir taş koyarak engelleyebilir miyiz?
+                // aradaki cell sayısı kadar dönecek döngü
+                for ( int x = Math.abs(kingCell.getX()-minatorCell.getX())-1 ; x>0 ; x--){
 
-                            int kingMindiffX = Math.abs(minatorCell.getX() - kingCell.getX());
-                            int kingMindiffY = Math.abs(minatorCell.getY()-kingCell.getY());
+                    for (int i =0 ; i<8 ; i++){
+                        for (int j=0; j<8; j++){
+                            if (!(board.getCell(i,j).getPiece()==null)  &&  board.getCell(i,j).getPiece().isWhite()==isWhite){
 
-                            if ( kingMindiffX == 0 ){
-                                // minator dikeyde
+                                Piece defender = board.getCell(i,j).getPiece();
+                                Cell defenderCell = board.getCell(i,j);
+                                Cell searchCell = null;
 
-                                // aradaki cell sayısı kadar dönecek döngü
-                                for ( int y = Math.abs(kingCell.getY()-minatorCell.getY())-1 ; y>0 ; y--){
-                                    for (int ki =0 ; ki<8 ; ki++){
-                                        for (int kj=0; kj<8; kj++){
+                                if (kingCell.getX()-minatorCell.getX()>0){
+                                    //şah sağda
+                                    searchCell = board.getCell(kingCell.getX()-x,kingCell.getY());
 
-                                            if (!(board.getCell(ki,kj).getPiece()==null)  &&  !board.getCell(ki,kj).getPiece().isWhite()){
-
-                                                Piece koruyucu = board.getCell(ki,kj).getPiece();
-                                                Cell koruyucuCell = board.getCell(ki,kj);
-                                                Cell arananCell = null;
-
-                                                if (kingCell.getY()-minatorCell.getY()<0){
-                                                    //şah üstte
-                                                    arananCell = board.getCell(kingCell.getX(),kingCell.getY()+y);
-                                                }else if (kingCell.getY()-minatorCell.getY()>0){
-                                                    //şah altta
-                                                    arananCell = board.getCell(kingCell.getX(),kingCell.getY()-y);
-                                                }
-
-                                                if (koruyucu.canMove(koruyucuCell,arananCell,board)){
-                                                    return false;
-                                                }
-                                            }
-                                        }
-                                    }
-
+                                } else if (kingCell.getX()-minatorCell.getX()<0) {
+                                    //şah solda
+                                    searchCell = board.getCell(kingCell.getX()+x,kingCell.getY());
                                 }
 
-
-                            } else if (kingMindiffY == 0) {
-                                // minator yatayda
-
-                                // aradaki cell sayısı kadar dönecek döngü
-                                for ( int x = Math.abs(kingCell.getX()-minatorCell.getX())-1 ; x>0 ; x--){
-
-                                    for (int ki =0 ; ki<8 ; ki++){
-                                        for (int kj=0; kj<8; kj++){
-                                            if (!(board.getCell(ki,kj).getPiece()==null)  &&  !board.getCell(ki,kj).getPiece().isWhite()){
-
-                                                Piece koruyucu = board.getCell(ki,kj).getPiece();
-                                                Cell koruyucuCell = board.getCell(ki,kj);
-                                                Cell arananCell = null;
-
-                                                if (kingCell.getX()-minatorCell.getX()>0){
-                                                    //şah sağda
-                                                    arananCell = board.getCell(kingCell.getX()-x,kingCell.getY());
-
-                                                } else if (kingCell.getX()-minatorCell.getX()<0) {
-                                                    //şah solda
-                                                    arananCell = board.getCell(kingCell.getX()+x,kingCell.getY());
-                                                }
-
-                                                if (koruyucu.canMove(koruyucuCell,arananCell,board)){
-                                                    return false;
-                                                }
-                                            }
-
-                                        }
-                                    }
-
-                                }
-
-
-                            } else if (kingMindiffX == kingMindiffY) {
-                                // minator çaprazda
-
-                                // aradaki cell sayısı kadar dönecek döngü
-                                for (int c = Math.abs(kingMindiffX) - 1; c > 0; c--) {
-
-                                    for (int ki = 0; ki < 8; ki++) {
-                                        for (int kj = 0; kj < 8; kj++) {
-
-                                            if (!(board.getCell(ki, kj).getPiece() == null) && !board.getCell(ki, kj).getPiece().isWhite()) {
-
-                                                Piece koruyucu = board.getCell(ki, kj).getPiece();
-                                                Cell koruyucuCell = board.getCell(ki, kj);
-                                                Cell arananCell = null;
-
-                                                if (kingCell.getX() < minatorCell.getX() && kingCell.getY() < minatorCell.getY()) {
-                                                    // şah sağ üst
-                                                    arananCell = board.getCell(kingCell.getX() - c, kingCell.getY() + c);
-                                                } else if (kingCell.getX() < minatorCell.getX() && kingCell.getY() > minatorCell.getY()) {
-                                                    // şah sağ alt
-                                                    arananCell = board.getCell(kingCell.getX() - c, kingCell.getY() - c);
-                                                } else if (kingCell.getX() > minatorCell.getX() && kingCell.getY() < minatorCell.getY()) {
-                                                    // şah sol üst
-                                                    arananCell = board.getCell(kingCell.getX() + c, kingCell.getY() - c);
-                                                } else {
-                                                    // şah sol alt
-                                                    arananCell = board.getCell(kingCell.getX() - c, kingCell.getY() - c);
-                                                }
-
-                                                if (koruyucu.canMove(koruyucuCell, arananCell, board)) {
-                                                    return false;
-                                                }
-                                            }
-                                        }
-                                    }
+                                if (defender.canMove(defenderCell,searchCell,board)){
+                                    return true;
                                 }
                             }
+                        }
+                    }
+                }
 
-                            //alamıyorsa şahın etrafındaki 8 kare için kontrol
-                            Cell[] cells={new Cell(bX-1,bY-1,null),
-                                    new Cell(bX,bY-1,null),
-                                    new Cell(bX+1,bY-1,null),
-                                    new Cell(bX-1,bY,null),
-                                    new Cell(bX+1,bY,null),
-                                    new Cell(bX-1,bY+1,null),
-                                    new Cell(bX,bY+1,null),
-                                    new Cell(bX+1,bY+1,null)};
+            } else if (diffX == diffY) {
+                // minator çaprazda
 
-                            boolean[] booleans = new boolean[]{true,true,true,true,true,true,true,true};
+                // aradaki cell sayısı kadar dönecek döngü
+                for (int c = Math.abs(diffX) - 1; c > 0; c--) {
 
-                            for (int i=0;i<8;i++){
-                                //şah o kareye gidebiliyor mu
-                                if (bKing.canMove(kingCell,cells[i],board)){
-                                    //her karedeki taşı al
-                                    for (int yy=0; yy<8; yy++){
-                                        for (int xx=0; xx<8; xx++){
-                                            //eğer taş varsa ve beyazsa
-                                            if (!(board.getCell(xx,yy).getPiece()==null) && board.getCell(xx,yy).getPiece().isWhite()){
-                                                Piece minator2 = board.getCell(xx,yy).getPiece();
-                                                Cell minator2Cell = board.getCell(xx,yy);
-                                                //ve şahın gidebileceği yeri tehdit ediyorsa
-                                                if (minator2.canMove(minator2Cell,kingCell,board)){
-                                                    booleans[i]=false; //siyah şah o kareye gidemez
-                                                }
-                                            }
-                                        }
-                                    }
-                                }else booleans[i]=false; //gidemiyor
-                            }
+                    for (int i = 0; i < 8; i++) {
+                        for (int j = 0; j < 8; j++) {
 
-                            for (int i=0;i<8;i++){
-                                if (booleans[i]){
-                                    return false;
+                            if (!(board.getCell(i, j).getPiece() == null) && board.getCell(i, j).getPiece().isWhite()==isWhite) {
+
+                                Piece defender = board.getCell(i, j).getPiece();
+                                Cell defenderCell = board.getCell(i, j);
+                                Cell searchcell = null;
+
+                                if (kingCell.getX() < minatorCell.getX() && kingCell.getY() < minatorCell.getY()) {
+                                    // şah sağ üst
+                                    searchcell = board.getCell(kingCell.getX() - c, kingCell.getY() + c);
+                                } else if (kingCell.getX() < minatorCell.getX() && kingCell.getY() > minatorCell.getY()) {
+                                    // şah sağ alt
+                                    searchcell = board.getCell(kingCell.getX() - c, kingCell.getY() - c);
+                                } else if (kingCell.getX() > minatorCell.getX() && kingCell.getY() < minatorCell.getY()) {
+                                    // şah sol üst
+                                    searchcell = board.getCell(kingCell.getX() + c, kingCell.getY() - c);
+                                } else {
+                                    // şah sol alt
+                                    searchcell = board.getCell(kingCell.getX() - c, kingCell.getY() - c);
                                 }
-                            }return true;
 
+                                if (defender.canMove(defenderCell, searchcell, board)) {
+                                    return true;
+                                }
+                            }
                         }
                     }
                 }
             }
+
+        }return false;
+    }
+
+    private boolean canEscapeCheck(Board board, Cell kingCell, boolean isWhite){
+
+        //şahın etrafındaki 8 kare için kontrol
+
+        int x = kingCell.getX();
+        int y = kingCell.getY();
+
+        Cell[] cells = {
+                new Cell(x - 1, y - 1, null),
+                new Cell(x, y - 1, null),
+                new Cell(x + 1, y - 1, null),
+                new Cell(x - 1, y, null),
+                new Cell(x + 1, y, null),
+                new Cell(x - 1, y + 1, null),
+                new Cell(x, y + 1, null),
+                new Cell(x + 1, y + 1, null)
+        };
+
+        boolean[] booleans = new boolean[]{true,true,true,true,true,true,true,true};
+
+        for (int i=0;i<8;i++){
+            //şah o kareye gidebiliyor mu
+            if (kingCell.getPiece().canMove(kingCell,cells[i],board)){
+                //gidebiliyor ama orası başka bir taş tarafından tehdit ediliyor mu?
+                for (int yy=0; yy<8; yy++){
+                    for (int xx=0; xx<8; xx++){
+                        //eğer taş varsa ve bizden değilse
+
+                        if ( !(board.getCell(xx,yy).getPiece()==null)  &&  board.getCell(xx,yy).getPiece().isWhite()!=isWhite){
+                            Piece minator2 = board.getCell(xx,yy).getPiece();
+                            Cell minator2Cell = board.getCell(xx,yy);
+                            //ve şahın gidebileceği yeri tehdit ediyorsa
+                            if (minator2.canMove(minator2Cell,kingCell,board)){
+                                booleans[i]=false; // şah o kareye gidemez
+                            }
+                        }
+                    }
+                }
+            }else booleans[i]=false; //gidemiyor
         }
-        //iki renk de tehdit altında değiğlse
-        return false;
+
+        for (int i=0;i<8;i++){
+            if (booleans[i]){  //8 kareden herhangi birine gidebiliyor
+                return true;
+            }
+        }return false;   //hiçbirine gidemiyor
     }
 }
