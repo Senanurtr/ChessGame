@@ -16,8 +16,6 @@ import static javax.swing.SwingUtilities.isRightMouseButton;
 public final class Gui{
     public final JFrame gameFrame;
     private final BoardPanel boardPanel;
-
-    // private static Board board;
     private final Game game;
     Player player0;
     Player player1;
@@ -137,6 +135,7 @@ public final class Gui{
                         startCell = null;
                         destinationCell = null;
                         selectedPiece = null;
+                        System.out.println("Seçimler sıfırlandı");
 
                         //sol tık ise hamle yap
                     }else if (isLeftMouseButton(e)){
@@ -206,11 +205,6 @@ public final class Gui{
         //tahtanın renkleri için
         private void assingTileColor() {
             Color gri = new Color(149, 141, 148, 255);
-            Color gr = new Color(207,178,213, 255);
-            Color p = new Color(70, 59, 72, 255);
-            Color pembe = new Color(226, 44, 184, 129);
-            Color th = new Color(230, 218, 241, 232);
-
 
             int row = titleId / 8;
             int col = titleId % 8;
