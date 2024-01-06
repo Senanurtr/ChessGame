@@ -55,7 +55,7 @@ public class Move {
 
     Scanner scanner = new Scanner(System.in);
     public void promote(Cell destination){
-        if (movingPiece instanceof Pawn && ((movingPiece.isWhite() && destination.getY() == 0) || (!movingPiece.isWhite() && destination.getY() == 7))){
+        if (movingPiece instanceof Pawn && (movingPiece.isWhite() && destination.getY() == 0) || (!movingPiece.isWhite() && destination.getY() == 7)){
             boolean Loop = true;
             while (Loop){
                 System.out.print("\nPiyonu terfi ettirmek istediginiz tas turunu seciniz: ");
@@ -120,4 +120,62 @@ public class Move {
         }
         return blackKingsPosition;
     }
+
+    public static boolean isEnPassant(Cell start, Cell destination, Board board){
+        //   Beyazsa
+        if (start.getPiece() != null && start.getPiece() instanceof Pawn && start.getPiece().isWhite()){
+            if (start.getX() <= 6 && start.getX() >= 1){
+
+                if ((board.getCell(start.getX() + 1, start.getY()).getPiece() instanceof Pawn
+                        && !board.getCell(start.getX() + 1, start.getY()).getPiece().isWhite() &&
+                        ((Pawn) board.getCell(start.getX() + 1, start.getY()).getPiece()).isRecentlyMoved() && destination.getPiece() == null ) ||
+                        (board.getCell(start.getX() - 1, start.getY()).getPiece() instanceof Pawn
+                                && !board.getCell(start.getX() - 1, start.getY()).getPiece().isWhite() &&
+                                ((Pawn) board.getCell(start.getX() - 1, start.getY()).getPiece()).isRecentlyMoved() && destination.getPiece() == null)) {
+                    return true;
+
+                }
+            }else if (start.getX() == 0){
+                if (board.getCell(start.getX() + 1, start.getY()).getPiece() instanceof Pawn
+                        && !board.getCell(start.getX() + 1, start.getY()).getPiece().isWhite() &&
+                        ((Pawn) board.getCell(start.getX() + 1, start.getY()).getPiece()).isRecentlyMoved() && destination.getPiece() == null){
+                    return true;
+                }
+            }else if (start.getX() == 7){
+                if (board.getCell(start.getX() - 1, start.getY()).getPiece() instanceof Pawn
+                        && !board.getCell(start.getX() - 1, start.getY()).getPiece().isWhite() &&
+                        ((Pawn) board.getCell(start.getX() - 1, start.getY()).getPiece()).isRecentlyMoved() && destination.getPiece() == null){
+                    return true;
+                }
+            }
+            //  Siyahsa
+        }else if (start.getPiece() != null && start.getPiece() instanceof Pawn && !start.getPiece().isWhite()){
+            if (start.getX() <= 6 && start.getX() >= 1){
+
+                if ((board.getCell(start.getX() + 1, start.getY()).getPiece() instanceof Pawn
+                        && board.getCell(start.getX() + 1, start.getY()).getPiece().isWhite() &&
+                        ((Pawn) board.getCell(start.getX() + 1, start.getY()).getPiece()).isRecentlyMoved() && destination.getPiece() == null ) ||
+                        (board.getCell(start.getX() - 1, start.getY()).getPiece() instanceof Pawn
+                                && board.getCell(start.getX() - 1, start.getY()).getPiece().isWhite() &&
+                                ((Pawn) board.getCell(start.getX() - 1, start.getY()).getPiece()).isRecentlyMoved() && destination.getPiece() == null)) {
+                    return true;
+                }
+            }else if (start.getX() == 0){
+                if (board.getCell(start.getX() + 1, start.getY()).getPiece() instanceof Pawn
+                        && board.getCell(start.getX() + 1, start.getY()).getPiece().isWhite() &&
+                        ((Pawn) board.getCell(start.getX() + 1, start.getY()).getPiece()).isRecentlyMoved() && destination.getPiece() == null){
+                    return true;
+                }
+            }else if (start.getX() == 7){
+                if (board.getCell(start.getX() - 1, start.getY()).getPiece() instanceof Pawn
+                        && board.getCell(start.getX() - 1, start.getY()).getPiece().isWhite() &&
+                        ((Pawn) board.getCell(start.getX() - 1, start.getY()).getPiece()).isRecentlyMoved() && destination.getPiece() == null){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
 }
