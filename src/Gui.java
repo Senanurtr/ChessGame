@@ -17,7 +17,7 @@ public final class Gui{
     public final JFrame gameFrame;
     private final BoardPanel boardPanel;
 
-    private final Board board;
+    private static Board board;
     private final Game game;
     Player player0;
     Player player1;
@@ -35,8 +35,6 @@ public final class Gui{
         final JMenuBar tableMenuBar = createTableMenuBar();
         this.gameFrame.setJMenuBar(tableMenuBar );
 
-
-        this.board = new Board();
         this.game = new Game();
         this.player0 = new Player(true);
         this.player1 = new Player(false);
@@ -131,12 +129,13 @@ public final class Gui{
                         destinationCell = null;
                         selectedPiece = null;
 
-                    //sol tık ise hamle yap
+                        //sol tık ise hamle yap
                     }else if (isLeftMouseButton(e)){
 
                         //ilk tıklamada start cell oluştur
                         if (startCell == null){
 
+                            board = game.getBoard();
                             startCell = board.getCell(titleId);
                             selectedPiece = startCell.getPiece();
                             System.out.println("start x "+startCell.getX()+" y "+startCell.getY()+" seçilen taş: "+startCell.getPiece().getType()); //çaşılıyor mu diye bakmak için
@@ -155,18 +154,27 @@ public final class Gui{
 
                                 if (selectedPiece.canMove(startCell,destinationCell,board)){
 
-                                    Move move = new Move(startCell,destinationCell,player0);
-                                    game.makeMove(move, game.getCurrentTurn());
+                                    if (game.getStatus()==GameStatus.ACTIVE){
+                                        Move move = new Move(startCell,destinationCell,player0);
+                                        game.makeMove(move, game.getCurrentTurn());
 
+                                        startCell = null;
+                                        destinationCell = null;
+                                        selectedPiece = null;
 
-                                    startCell = null;
-                                    destinationCell = null;
-                                    selectedPiece = null;
+                                    }else if (game.getStatus()==GameStatus.BLACK_WIN){
+                                        System.out.println("Siyah kazandı");
+                                        System.exit(0);
+
+                                    } else if (game.getStatus()==GameStatus.WHITE_WIN) {
+                                        System.out.println("Beyaz kazandı");
+                                        System.exit(0);
+
+                                    }
 
                                 }else {
                                     System.out.println("canMove false döndü");
                                 }
-
 
                             }else {
                                 System.out.println("seçilen taş senin değil");
@@ -238,6 +246,7 @@ public final class Gui{
     }
 
     public static void main(String[] args) {
+        board = new Board();
         Gui gui = new Gui();
     }
 }
