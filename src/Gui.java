@@ -17,7 +17,7 @@ public final class Gui{
     public final JFrame gameFrame;
     private final BoardPanel boardPanel;
 
-    private static Board board;
+    // private static Board board;
     private final Game game;
     Player player0;
     Player player1;
@@ -103,6 +103,15 @@ public final class Gui{
             }
             validate();
             repaint();
+
+            if (game.getStatus()==GameStatus.BLACK_WIN){
+                System.out.println("Siyah kazandı!");
+                System.exit(0);
+            } else if (game.getStatus()==GameStatus.WHITE_WIN) {
+                System.out.println("Beyaz kazandı!");
+                System.exit(0);
+            }
+
         }
     }
 
@@ -115,7 +124,7 @@ public final class Gui{
             this.titleId = titleId;
 
             setPreferredSize(TITLE_PANEL_DIMENTION);
-            assignTilePieceIcon(board);
+            assignTilePieceIcon(game.getBoard());
             assingTileColor();
 
             addMouseListener(new MouseListener() {
@@ -135,8 +144,7 @@ public final class Gui{
                         //ilk tıklamada start cell oluştur
                         if (startCell == null){
 
-                            board = game.getBoard();
-                            startCell = board.getCell(titleId);
+                            startCell = game.getBoard().getCell(titleId);
                             selectedPiece = startCell.getPiece();
                             System.out.println("start x "+startCell.getX()+" y "+startCell.getY()+" seçilen taş: "+startCell.getPiece().getType()); //çaşılıyor mu diye bakmak için
 
@@ -146,35 +154,20 @@ public final class Gui{
 
                         }else {
                             //ikinci tıklamada destination cell oluştur
-                            destinationCell = board.getCell(titleId);
+                            destinationCell = game.getBoard().getCell(titleId);
                             System.out.println("dest x "+destinationCell.getX()+" y "+destinationCell.getY());
 
 
                             if (startCell.getPiece().isWhite()==game.getCurrentTurn().whiteSide){
 
-                                if (selectedPiece.canMove(startCell,destinationCell,board)){
 
-                                    if (game.getStatus()==GameStatus.ACTIVE){
-                                        Move move = new Move(startCell,destinationCell,player0);
-                                        game.makeMove(move, game.getCurrentTurn());
+                                Move move = new Move(startCell,destinationCell,player0);
+                                game.makeMove(move, game.getCurrentTurn());
 
-                                        startCell = null;
-                                        destinationCell = null;
-                                        selectedPiece = null;
+                                startCell = null;
+                                destinationCell = null;
+                                selectedPiece = null;
 
-                                    }else if (game.getStatus()==GameStatus.BLACK_WIN){
-                                        System.out.println("Siyah kazandı");
-                                        System.exit(0);
-
-                                    } else if (game.getStatus()==GameStatus.WHITE_WIN) {
-                                        System.out.println("Beyaz kazandı");
-                                        System.exit(0);
-
-                                    }
-
-                                }else {
-                                    System.out.println("canMove false döndü");
-                                }
 
                             }else {
                                 System.out.println("seçilen taş senin değil");
@@ -184,7 +177,8 @@ public final class Gui{
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                boardPanel.drawBoard(board);
+                                boardPanel.drawBoard(game.getBoard());
+
                             }
                         });
                     }
@@ -212,6 +206,11 @@ public final class Gui{
         //tahtanın renkleri için
         private void assingTileColor() {
             Color gri = new Color(149, 141, 148, 255);
+            Color gr = new Color(207,178,213, 255);
+            Color p = new Color(70, 59, 72, 255);
+            Color pembe = new Color(226, 44, 184, 129);
+            Color th = new Color(230, 218, 241, 232);
+
 
             int row = titleId / 8;
             int col = titleId % 8;
@@ -246,7 +245,7 @@ public final class Gui{
     }
 
     public static void main(String[] args) {
-        board = new Board();
+
         Gui gui = new Gui();
     }
 }
