@@ -23,24 +23,24 @@ public class Knight extends Piece {
         return path;
     }
 
-
     @Override
     public boolean canMove(Cell start, Cell destination, Board board) {
 
-        if (destination.getPiece() == null){
-            return true;
+        int diffX = Math.abs(destination.getX() - start.getX());
+        int diffY = Math.abs(destination.getY() - start.getY());
+
+        if (destination.getPiece() == null) {
+            if ((diffX == 1 && diffY == 2) || (diffX == 2 && diffY == 1)) {
+                return true;  // L şeklindeki hareketi kontrol eder
+            }
+        } else if (destination.getPiece() != null) {
+            if (start.getPiece().isWhite() == destination.getPiece().isWhite()) {
+                return false;  // Hedef hücrede aynı renkte başka bir taş varsa
+            } else if (diffX == 1 && diffY == 2 || diffX == 2 && diffY == 1) {
+                return true;
+            }
         }
 
-        // Hedef hücrede aynı renkte başka bir taş varsa
-        if (start.getPiece().isWhite() == destination.getPiece().isWhite()) {
-            return false;
-        }
-
-        // L şeklindeki hareketi kontrol eder
-        if ((Math.abs(destination.getX() - start.getX()) == 1 && Math.abs(destination.getY() - start.getY()) == 2)
-                || (Math.abs(destination.getX() - start.getX()) == 2 && Math.abs(destination.getY() - start.getY()) == 1)) {
-            return true;
-        }else
-            return false;
+        return false;
     }
 }
