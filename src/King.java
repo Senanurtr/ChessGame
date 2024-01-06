@@ -389,7 +389,7 @@ public class King extends Piece{
                             Piece minator2 = board.getCell(xx,yy).getPiece();
                             Cell minator2Cell = board.getCell(xx,yy);
                             //ve şahın gidebileceği yeri tehdit ediyorsa
-                            if (minator2.canMove(minator2Cell,kingCell,board)){
+                            if (minator2.canMove(minator2Cell,cells[i],board)){
                                 booleans[i]=false; // şah o kareye gidemez
                             }
                         }
