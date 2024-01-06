@@ -263,16 +263,18 @@ public class King extends Piece{
                                 Cell defenderCell = board.getCell(i,j);
                                 Cell searchCell = null;
 
-                                if (kingCell.getY()-minatorCell.getY()<0){
-                                    //şah üstte
-                                    searchCell = board.getCell(kingCell.getX(),kingCell.getY()+y);
-                                }else if (kingCell.getY()-minatorCell.getY()>0){
-                                    //şah altta
-                                    searchCell = board.getCell(kingCell.getX(),kingCell.getY()-y);
-                                }
+                                if (!(defender instanceof King)){
+                                    if (kingCell.getY()-minatorCell.getY()<0){
+                                        //şah üstte
+                                        searchCell = board.getCell(kingCell.getX(),kingCell.getY()+y);
+                                    }else if (kingCell.getY()-minatorCell.getY()>0){
+                                        //şah altta
+                                        searchCell = board.getCell(kingCell.getX(),kingCell.getY()-y);
+                                    }
 
-                                if (defender.canMove(defenderCell,searchCell,board)){
-                                    return true;
+                                    if (defender.canMove(defenderCell,searchCell,board)){
+                                        return true;
+                                    }
                                 }
                             }
                         }
@@ -292,17 +294,20 @@ public class King extends Piece{
                                 Cell defenderCell = board.getCell(i,j);
                                 Cell searchCell = null;
 
-                                if (kingCell.getX()-minatorCell.getX()>0){
-                                    //şah sağda
-                                    searchCell = board.getCell(kingCell.getX()-x,kingCell.getY());
 
-                                } else if (kingCell.getX()-minatorCell.getX()<0) {
-                                    //şah solda
-                                    searchCell = board.getCell(kingCell.getX()+x,kingCell.getY());
-                                }
+                                if (!(defender instanceof King)){
+                                    if (kingCell.getX()-minatorCell.getX()>0){
+                                        //şah sağda
+                                        searchCell = board.getCell(kingCell.getX()-x,kingCell.getY());
 
-                                if (defender.canMove(defenderCell,searchCell,board)){
-                                    return true;
+                                    } else if (kingCell.getX()-minatorCell.getX()<0) {
+                                        //şah solda
+                                        searchCell = board.getCell(kingCell.getX()+x,kingCell.getY());
+                                    }
+
+                                    if (defender.canMove(defenderCell,searchCell,board)){
+                                        return true;
+                                    }
                                 }
                             }
                         }
@@ -318,28 +323,30 @@ public class King extends Piece{
                     for (int i = 0; i < 8; i++) {
                         for (int j = 0; j < 8; j++) {
 
-                            if (!(board.getCell(i, j).getPiece() == null) && board.getCell(i, j).getPiece().isWhite()==isWhite) {
+                            if ( board.getCell(i, j).getPiece() != null && board.getCell(i, j).getPiece().isWhite()==isWhite) {
 
                                 Piece defender = board.getCell(i, j).getPiece();
                                 Cell defenderCell = board.getCell(i, j);
                                 Cell searchcell = null;
 
-                                if (kingCell.getX() < minatorCell.getX() && kingCell.getY() < minatorCell.getY()) {
-                                    // şah sağ üst
-                                    searchcell = board.getCell(kingCell.getX() - c, kingCell.getY() + c);
-                                } else if (kingCell.getX() < minatorCell.getX() && kingCell.getY() > minatorCell.getY()) {
-                                    // şah sağ alt
-                                    searchcell = board.getCell(kingCell.getX() - c, kingCell.getY() - c);
-                                } else if (kingCell.getX() > minatorCell.getX() && kingCell.getY() < minatorCell.getY()) {
-                                    // şah sol üst
-                                    searchcell = board.getCell(kingCell.getX() + c, kingCell.getY() - c);
-                                } else {
-                                    // şah sol alt
-                                    searchcell = board.getCell(kingCell.getX() - c, kingCell.getY() - c);
-                                }
+                                if (!(defender instanceof King)){
+                                    if (kingCell.getX() > minatorCell.getX() && kingCell.getY() < minatorCell.getY()) {
+                                        // şah sağ üst
+                                        searchcell = board.getCell(kingCell.getX() - c, kingCell.getY() + c);
+                                    } else if (kingCell.getX() > minatorCell.getX() && kingCell.getY() > minatorCell.getY()) {
+                                        // şah sağ alt
+                                        searchcell = board.getCell(kingCell.getX() - c, kingCell.getY() - c);
+                                    } else if (kingCell.getX() < minatorCell.getX() && kingCell.getY() < minatorCell.getY()) {
+                                        // şah sol üst
+                                        searchcell = board.getCell(kingCell.getX() + c, kingCell.getY() + c);
+                                    } else if (kingCell.getX() < minatorCell.getX() && kingCell.getY() > minatorCell.getY()){
+                                        // şah sol alt
+                                        searchcell = board.getCell(kingCell.getX() + c, kingCell.getY() - c);
+                                    }
 
-                                if (defender.canMove(defenderCell, searchcell, board)) {
-                                    return true;
+                                    if (defender.canMove(defenderCell, searchcell, board)) {
+                                        return true;
+                                    }
                                 }
                             }
                         }
