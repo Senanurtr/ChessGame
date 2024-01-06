@@ -4,6 +4,7 @@ public class Game {
     private Player currentTurn;
     private GameStatus status;
 
+
     public Player getCurrentTurn(){
         return this.currentTurn;
     }
@@ -46,6 +47,22 @@ public class Game {
             return false;
         }
 
+        //   RecentlyMoved false olması
+
+        if (currentTurn.isWhiteSide()){
+            for (int x = 0; x <= 7; x++){
+                if (board.getCell(x, 4).getPiece() instanceof Pawn && ((Pawn) board.getCell(x, 4).getPiece()).isRecentlyMoved()){
+                    ((Pawn) board.getCell(x, 4).getPiece()).setRecentlyMoved(false);
+                }
+            }
+        }else {
+            for (int x = 0; x <= 7; x++){
+                if (board.getCell(x, 3).getPiece() instanceof Pawn && ((Pawn) board.getCell(x, 3).getPiece()).isRecentlyMoved()){
+                    ((Pawn) board.getCell(x, 3).getPiece()).setRecentlyMoved(false);
+                }
+            }
+        }
+
         //  Secili tas sirasi gelen kisinin tasi mi?
         if (selectedPiece.isWhite() != currentTurn.isWhiteSide()){
             System.out.println("Sirasi gelen kisi kendi taslarini oynamiyor");
@@ -53,9 +70,13 @@ public class Game {
         }
 
         //  Secili tas belirtilen hamleyi yapabilir mi?
-        if (!selectedPiece.canMove(move.getStart(), move.getDestination(), board)){
-            System.out.println("Secili tas istenilen konuma gidemez");
-            return false;
+        if (!move.isEnPassant(move.getStart(), move.getDestination(), board)){
+            if (!selectedPiece.canMove(move.getStart(), move.getDestination(), board)){
+                System.out.println("Secili tas istenilen konuma gidemez");
+
+                return false;
+            }
+
         }
 
         //  Tas alindi mi?
@@ -78,7 +99,7 @@ public class Game {
         if (selectedPiece instanceof King &&
                 ((King) selectedPiece).isCastlingMove(move.getStart(), move.getDestination(), board)){
 
-            if (move.getStart().getPiece().isWhite() && move.getDestination().getX() == 1){
+            if (move.getStart().getPiece().isWhite() && move.getDestination().getX() == 2){
                 //  Sahin hareket etmesi
                 move.getDestination().setPiece(selectedPiece);
                 move.getStart().setPiece(null);
@@ -87,10 +108,10 @@ public class Game {
 
                 //  Kalenin hareket etmesi
                 board.getCell(0, 7).setPiece(null);
-                board.getCell(2, 7).setPiece(selectedRook);
-                System.out.println("Beyaz kısa rok yaptı");
+                board.getCell(3, 7).setPiece(selectedRook);
+                System.out.println("Beyaz uzun rok yaptı");
 
-            } else if (move.getStart().getPiece().isWhite() && move.getDestination().getY() == 7) {
+            } else if (move.getStart().getPiece().isWhite() && move.getDestination().getX() == 6) {
                 //  Sahin hareket etmesi
                 move.getDestination().setPiece(selectedPiece);
                 move.getStart().setPiece(null);
@@ -99,14 +120,14 @@ public class Game {
 
                 //  Kalenin hareket etmesi
                 board.getCell(7, 7).setPiece(null);
-                board.getCell(4, 7).setPiece(selectedRook);
-                System.out.println("Beyaz uzun rok yaptı");
+                board.getCell(5, 7).setPiece(selectedRook);
+                System.out.println("Beyaz kısa rok yaptı");
 
 
 
                 //  Siyah Tas icin
                 //  Sah'in hareket etmesi
-            } else if (!move.getStart().getPiece().isWhite() && move.getDestination().getX() == 1) {
+            } else if (!move.getStart().getPiece().isWhite() && move.getDestination().getX() == 2) {
                 //  Sahin hareket etmesi
                 move.getDestination().setPiece(selectedPiece);
                 move.getStart().setPiece(null);
@@ -115,11 +136,11 @@ public class Game {
 
                 //  Kalenin hareket etmesi
                 board.getCell(0, 0).setPiece(null);
-                board.getCell(2, 0).setPiece(selectedRook);
+                board.getCell(3, 0).setPiece(selectedRook);
                 System.out.println("Siyah kısa rok yaptı");
 
 
-            } else if (!move.getStart().getPiece().isWhite() && move.getDestination().getX() == 5) {
+            } else if (!move.getStart().getPiece().isWhite() && move.getDestination().getX() == 6) {
                 //  Sahin hareket etmesi
                 move.getDestination().setPiece(selectedPiece);
                 move.getStart().setPiece(null);
@@ -128,9 +149,21 @@ public class Game {
 
                 //  Kalenin hareket etmesi
                 board.getCell(7, 0).setPiece(null);
-                board.getCell(4, 0).setPiece(selectedRook);
+                board.getCell(5, 0).setPiece(selectedRook);
                 System.out.println("Siyah uzun rok yaptı");
 
+            }
+
+            //  Gecerken alma
+        }else if (move.isEnPassant(move.getStart(), move.getDestination(), board)){
+
+            move.getDestination().setPiece(selectedPiece);
+            move.getStart().setPiece(null);
+
+            if (selectedPiece.isWhite()){
+                board.getCell(move.getDestination().getX(), move.getDestination().getY() + 1).setPiece(null);
+            }else {
+                board.getCell(move.getDestination().getX(), move.getDestination().getY() - 1).setPiece(null);
             }
 
         }else {
@@ -157,10 +190,17 @@ public class Game {
         if (selectedPiece instanceof Pawn){
             ((Pawn) selectedPiece).setMoved(true);
         }
-        if (move.blackKingsPosition(board).getPiece() instanceof King && ((King) move.blackKingsPosition(board).getPiece()).isCheckmate(board)){
+
+        //  İki kare ilerlemis ise recentlyMoved true olur.
+        if (selectedPiece instanceof Pawn && Math.abs(move.getDestination().getY() - move.getStart().getY()) == 2){
+            ((Pawn) selectedPiece).setRecentlyMoved(true);
+        }
+
+        //  Sah Mat olma durumu
+        if (move.blackKingsPosition(board).getPiece() instanceof King && ((King) move.blackKingsPosition(board).getPiece()).isCheckmate(board) && currentTurn.whiteSide){
             this.setStatus(GameStatus.WHITE_WIN);
 
-        } else if (move.whiteKingsPosition(board).getPiece() instanceof King && ((King) move.whiteKingsPosition(board).getPiece()).isCheckmate(board)) {
+        } else if (move.whiteKingsPosition(board).getPiece() instanceof King && ((King) move.whiteKingsPosition(board).getPiece()).isCheckmate(board)&& !currentTurn.whiteSide) {
             this.setStatus(GameStatus.BLACK_WIN);
         }
 
