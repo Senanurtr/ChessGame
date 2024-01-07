@@ -356,6 +356,11 @@ public class King extends Piece{
 
         }return false;
     }
+    private Cell createCell(int x,int y,Board board){
+        if (x > 0 && x <= 8 && y > 0 && y <= 8){
+            return new Cell(x,y,board.getCell(x,y).getPiece());
+        }else return new Cell(0,0,new King(isWhite()));
+    }
 
     private boolean canEscapeCheck(Board board, Cell kingCell, boolean isWhite){
 
@@ -364,21 +369,23 @@ public class King extends Piece{
         int x = kingCell.getX();
         int y = kingCell.getY();
 
-        Cell[] cells = {
-                new Cell(x - 1, y - 1, null),
-                new Cell(x, y - 1, null),
-                new Cell(x + 1, y - 1, null),
-                new Cell(x - 1, y, null),
-                new Cell(x + 1, y, null),
-                new Cell(x - 1, y + 1, null),
-                new Cell(x, y + 1, null),
-                new Cell(x + 1, y + 1, null)
-        };
+        Cell cell1,cell2,cell3,cell4,cell5,cell6,cell7,cell8;
+
+        cell1 = createCell(x-1,y-1,board);
+        cell2 = createCell(x,y-1,board);
+        cell3 = createCell(x+1,y-1,board);
+        cell4 = createCell(x-1,y,board);
+        cell5 = createCell(x+1,y,board);
+        cell6 = createCell(x-1,y+1,board);
+        cell7 = createCell(x,y+1,board);
+        cell8 = createCell(x+1,y+1,board);
+
+        Cell[] cells = {cell1,cell2,cell3,cell4,cell5,cell6,cell7,cell8};
 
         boolean[] booleans = new boolean[]{true,true,true,true,true,true,true,true};
 
         for (int i=0;i<8;i++){
-            //şah o kareye gidebiliyor mu
+                //şah o kareye gidebiliyor mu
             if (kingCell.getPiece().canMove(kingCell,cells[i],board)){
                 //gidebiliyor ama orası başka bir taş tarafından tehdit ediliyor mu?
                 for (int yy=0; yy<8; yy++){
